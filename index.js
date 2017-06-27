@@ -1,18 +1,17 @@
 //Bare bones server intialization.
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook').Strategy;
-const port = process.env.PORT || 3000;
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
-const config = require('./config/config.js');
 //cookie monster's code repos!
-var flash = require('connect-flash');
-var cookieParser = require('cookie-parser');
-var session = require('express-session');
-//Require if modular code is put in helper:
-//var helper = require('./helpers/helper');
+const flash = require('connect-flash');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+//var helper = require('./helpers/helper'); //Require if modular code is put in helper:
+const env = require('node-env-file');
 
+env(__dirname + '/.env');
 
 const app = express();
 
@@ -45,9 +44,9 @@ app.use(express.static(path.resolve(__dirname, './home')));
 //Passport facebook strategy config:
 
 passport.use(new FacebookStrategy({
-  clientID: config.FACEBOOK_APP_ID, 
-  clientSecret: config.FACEBOOK_APP_SECRET, 
-  callbackURL: 'https://recrac.herokuapp.com/auth/facebook/callback',
+  clientID: process.env.FACEBOOK_APP_ID, 
+  clientSecret: process.env.FACEBOOK_APP_SECRET, 
+  callbackURL: process.env.FACEBOOK_CB_URL,
   profileFields: ['id', 'displayName', 'photos', 'emails']
 },
 function(accessToken, refreshToken, profile, done) {
@@ -314,6 +313,6 @@ app.put('/user/:id', function(req, res) { //email: email, number:number, descrip
 
 
 //Server init to listen on port 3000 -> Needs to be altered for deployment
-app.listen(port);
-console.log('Greenfield server running on :3000');
+app.listen(process.env.PORT);
+console.log('RECRAC server running on :3000');
 //here is a change.
