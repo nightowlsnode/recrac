@@ -1,48 +1,36 @@
-//Bare bones server intialization.
-const passport = require('passport');
-const FacebookStrategy = require('passport-facebook').Strategy;
+// build env for dev env
+require('node-env-file')(__dirname + '/.env');
+// DB stuff
+const db = require('./db');
+const Message = require('./models/message');
+const User = require('./models/user');
+const Event = require('./models/event');
+// Server Stuff
 const express = require('express');
 const path = require('path');
-const bodyParser = require('body-parser');
-//cookie monster's code repos!
 const flash = require('connect-flash');
-const cookieParser = require('cookie-parser');
+const morgan = require('morgan');
 const session = require('express-session');
-//var helper = require('./helpers/helper'); //Require if modular code is put in helper:
-const env = require('node-env-file');
-
-env(__dirname + '/.env');
-
+const bodyParser = require('body-parser');
+const passport = require('passport');
+const FacebookStrategy = require('passport-facebook').Strategy;
 const app = express();
 
-const db = require('./db');
-
-//enabling various cookie /session /flash functionality! <('.')>
-app.use(cookieParser());
+// UNDER(middle)WEAR
+app.use(morgan(':method :url :status :response-time ms - :res[content-length]', {
+  skip: function (req, res) { return res.statusCode === 304; },
+}));
 app.use(session({secret: 'recursive raccoon', resave: true, saveUninitialized: false}));
-
-
 //passport authentication
 app.use(passport.initialize());
 app.use(passport.session());
-
 app.use(flash());
 
-//Require all created models:
-var Message = require('./models/message');
-var User = require('./models/user');
-var Event = require('./models/event');
-
-// Middleware to parse body:
 app.use(bodyParser.json());
-
-//Paths to look for files to import (can have many):
 app.use(express.static(path.resolve(__dirname, './node_modules')));
-
 app.use(express.static(path.resolve(__dirname, './home')));
 
 //Passport facebook strategy config:
-
 passport.use(new FacebookStrategy({
   clientID: process.env.FACEBOOK_APP_ID, 
   clientSecret: process.env.FACEBOOK_APP_SECRET, 
@@ -314,5 +302,5 @@ app.put('/user/:id', function(req, res) { //email: email, number:number, descrip
 
 //Server init to listen on port 3000 -> Needs to be altered for deployment
 app.listen(process.env.PORT);
-console.log('RECRAC server running on :3000');
+console.log(`RECRAC server running on :${process.env.PORT}`);
 //here is a change.

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-//Need to change to no local host before deployment.
+
 mongoose.connect(process.env.MONGODB_URI);
 
 const db = mongoose.connection;
