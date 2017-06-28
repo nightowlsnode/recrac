@@ -34,11 +34,15 @@
     "leaflet": "^1.0.3",
     "leaflet-extra-markers": "^1.0.6",
     "mongoose": "^4.10.6",
+    "morgan": "^1.8.2",
     "node": "0.0.0",
     "nodemon": "^1.11.0",
     "passport": "^0.3.2",
     "passport-facebook": "^2.1.1",
     "request": "^2.81.0",
     "ui-leaflet": "^1.0.3"
+  },
+  "devDependencies": {
+    "node-env-file": "^0.1.8"
   }
 }
