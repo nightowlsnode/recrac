@@ -15,6 +15,8 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook').Strategy;
 const app = express();
+const server = httpServer(app);
+const ws = socket(server);
 
 // UNDER(middle)WEAR
 app.use(morgan(':method :url :status :response-time ms - :res[content-length]', {
@@ -32,9 +34,11 @@ app.use(express.static(path.resolve(__dirname, './home')));
 
 //Passport facebook strategy config:
 passport.use(new FacebookStrategy({
+
   clientID: process.env.FACEBOOK_APP_ID, 
   clientSecret: process.env.FACEBOOK_APP_SECRET, 
   callbackURL: process.env.FACEBOOK_CB_URL,
+
   profileFields: ['id', 'displayName', 'photos', 'emails']
 },
 function(accessToken, refreshToken, profile, done) {
@@ -168,6 +172,12 @@ app.post('/events', function(req, res) {
       res.status(500).send(err);
     } else {
       res.status(200).send(newEvent);
+      User.findById(req.user._id)
+        .then ((user) => {
+          user.hostedEvents.push(newEvent._id);
+          return user.save()
+            .catch((err) => console.log(err));
+        });
     }
   });
 });
@@ -301,6 +311,34 @@ app.put('/user/:id', function(req, res) { //email: email, number:number, descrip
 
 
 //Server init to listen on port 3000 -> Needs to be altered for deployment
-app.listen(process.env.PORT);
+
+server.listen(process.env.PORT);
 console.log(`RECRAC server running on :${process.env.PORT}`);
 //here is a change.
+
+server.listen(port);
+console.log('Greenfield server running on :3000');
+var users = [];
+
+ws.on('connection', function(socket) {
+  socket.on('getUserInfo', (info) => {
+    console.log('sId', socket.id);
+    info.data.user.socketId = socket.id;
+    users.push(info.data.user);
+    console.log('added user');
+  });
+
+  socket.on('postComment', (comment) => {
+    const {id } = comment;
+    console.log('comment', comment);
+    users.forEach((user) => {
+      if (user.hostedEvents.includes (id)) {
+        ws.to(user.socketId).emit('addAlert', {user: comment.user.user, eventName: comment.eventName, comment });
+      }  
+    });
+  });
+});
+
+
+//here is a change.
+
