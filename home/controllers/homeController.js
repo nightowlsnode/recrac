@@ -1,13 +1,14 @@
 angular.module('App')
-  .controller('HomeController', ['$scope', '$rootScope', '$state', 'userService', 'searchServices', 'mappingTools', 'Data',
-    function ($scope, $rootScope, $state, userService, searchServices, mappingTools, Data) {
-
+  .controller('HomeController', ['$scope', '$rootScope', '$state', 'userService', 'searchServices', 'mappingTools', 'Data', 'socket',
+    function ($scope, $rootScope, $state, userService, searchServices, mappingTools, Data, socket) {
       var markers = {};
 
       userService //authentication
         .authenticate()
-        .then(function (user) { $scope.user = user; });
-
+        .then(function (user) {
+          $scope.user = user;
+          socket.emit('getUserInfo', $scope.user );
+        });
       $scope.layers = mappingTools.Layer; //map set up tiles from mapbox
       $scope.defaults = { scrollWheelZoom: false
       }; //map set up turn off scroll wheel zoom.
@@ -34,8 +35,10 @@ angular.module('App')
             focus: true
           };         
         });
-
       var markers = mappingTools.eventToMarker(Data); //get markers from database
+      
+
+     
 
       $scope.markers = markers; //add them to the scope
   
@@ -48,4 +51,3 @@ angular.module('App')
       $scope.nofilter = searchServices.nofilter;
 
     }]);
-

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 //Need to change to no local host before deployment.
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/GreenfieldDB');
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://DrLove:DrLust@ds141242.mlab.com:41242/recrac');
 
 const db = mongoose.connection;
 db.on('error', (err) => console.error('Mongo connection problem:', err));

@@ -1,4 +1,3 @@
-//Bare bones server intialization.
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook').Strategy;
 const port = process.env.PORT || 3000;
@@ -10,11 +9,15 @@ const config = require('./config/config.js');
 var flash = require('connect-flash');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
+const socket = require('socket.io');
+const httpServer = require('http').Server;
 //Require if modular code is put in helper:
 //var helper = require('./helpers/helper');
 
 
 const app = express();
+const server = httpServer(app);
+const ws = socket(server);
 
 const db = require('./db');
 
@@ -47,7 +50,7 @@ app.use(express.static(path.resolve(__dirname, './home')));
 passport.use(new FacebookStrategy({
   clientID: config.FACEBOOK_APP_ID, 
   clientSecret: config.FACEBOOK_APP_SECRET, 
-  callbackURL: 'https://recrac.herokuapp.com/auth/facebook/callback',
+  callbackURL: 'http://localhost:3000/auth/facebook/callback',
   profileFields: ['id', 'displayName', 'photos', 'emails']
 },
 function(accessToken, refreshToken, profile, done) {
@@ -181,6 +184,12 @@ app.post('/events', function(req, res) {
       res.status(500).send(err);
     } else {
       res.status(200).send(newEvent);
+      User.findById(req.user._id)
+        .then ((user) => {
+          user.hostedEvents.push(newEvent._id);
+          return user.save()
+            .catch((err) => console.log(err));
+        });
     }
   });
 });
@@ -314,6 +323,28 @@ app.put('/user/:id', function(req, res) { //email: email, number:number, descrip
 
 
 //Server init to listen on port 3000 -> Needs to be altered for deployment
-app.listen(port);
+server.listen(port);
 console.log('Greenfield server running on :3000');
+var users = [];
+
+ws.on('connection', function(socket) {
+  socket.on('getUserInfo', (info) => {
+    console.log('sId', socket.id);
+    info.data.user.socketId = socket.id;
+    users.push(info.data.user);
+    console.log('added user');
+  });
+
+  socket.on('postComment', (comment) => {
+    const {id } = comment;
+    console.log('comment', comment);
+    users.forEach((user) => {
+      if (user.hostedEvents.includes (id)) {
+        ws.to(user.socketId).emit('addAlert', {user: comment.user.user, eventName: comment.eventName, comment });
+      }  
+    });
+  });
+});
+
+
 //here is a change.
