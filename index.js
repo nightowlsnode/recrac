@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // build env for dev env
 require('node-env-file')(__dirname + '/.env');
 // DB stuff
@@ -6,15 +7,32 @@ const Message = require('./models/message');
 const User = require('./models/user');
 const Event = require('./models/event');
 // Server Stuff
+
 const express = require('express');
 const path = require('path');
 const flash = require('connect-flash');
 const morgan = require('morgan');
 const session = require('express-session');
 const bodyParser = require('body-parser');
+
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook').Strategy;
+
+const config = require('./config/config.js');
+//cookie monster's code repos!
+var flash = require('connect-flash');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+const socket = require('socket.io');
+const httpServer = require('http').Server;
+//Require if modular code is put in helper:
+//var helper = require('./helpers/helper');
+
+
+
 const app = express();
+const server = httpServer(app);
+const ws = socket(server);
 
 // UNDER(middle)WEAR
 app.use(morgan(':method :url :status :response-time ms - :res[content-length]', {
@@ -32,9 +50,11 @@ app.use(express.static(path.resolve(__dirname, './home')));
 
 //Passport facebook strategy config:
 passport.use(new FacebookStrategy({
-  clientID: process.env.FACEBOOK_APP_ID, 
-  clientSecret: process.env.FACEBOOK_APP_SECRET, 
+
+  clientID: process.env.FACEBOOK_APP_ID,
+  clientSecret: process.env.FACEBOOK_APP_SECRET,
   callbackURL: process.env.FACEBOOK_CB_URL,
+
   profileFields: ['id', 'displayName', 'photos', 'emails']
 },
 function(accessToken, refreshToken, profile, done) {
@@ -65,7 +85,7 @@ function(accessToken, refreshToken, profile, done) {
     }
   });
 }
-));    
+));
 
 // Configure Passport authenticated session persistence.
 //
@@ -100,8 +120,8 @@ app.get('/auth/facebook/callback',
   });
 
 app.get('/account', function(req, res) {
-  if (req.isAuthenticated()) { 
-    res.send({user: req.user}); 
+  if (req.isAuthenticated()) {
+    res.send({user: req.user});
   } else {
     res.sendStatus(404);
   }
@@ -168,6 +188,12 @@ app.post('/events', function(req, res) {
       res.status(500).send(err);
     } else {
       res.status(200).send(newEvent);
+      User.findById(req.user._id)
+        .then ((user) => {
+          user.hostedEvents.push(newEvent._id);
+          return user.save()
+            .catch((err) => console.log(err));
+        });
     }
   });
 });
@@ -218,20 +244,20 @@ app.put('/events/:id', function(req, res) {
     // Updating all the information from the event
     // **********************************************************************
     if (req.body.name) {
-      newEvent.name = req.body.name;   
+      newEvent.name = req.body.name;
     }
     if (req.body.description) {
       newEvent.description = req.body.description;
     }
-    
+
     if (req.user) {
       newEvent.host = req.user.user;
     }
-    
+
     if (req.body.type) {
       newEvent.type = req.body.type;
     }
-    
+
     if (req.body.time) {
       newEvent.time = req.body.time;
     }
@@ -241,16 +267,16 @@ app.put('/events/:id', function(req, res) {
     if (req.body.desiredParticipants) {
       newEvent.desiredParticipants = req.body.desiredParticipants;
     }
-    
+
     if (req.body.location) {
       newEvent.location = {
         address: req.body.location,
-        lng: 0, 
+        lng: 0,
         lat: 0
       };
     }
     // **********************************************************************
-    
+
     // Saving the changed fields
     newEvent.save(function(err, updatedEvent) {
       res.send(updatedEvent);
@@ -290,7 +316,7 @@ app.put('/user/:id', function(req, res) { //email: email, number:number, descrip
     newUser.number = req.body.number;
     newUser.description = req.body.description;
     // **********************************************************************
-    
+
     // Saving the changed fields
     newUser.save(function(err, updatedUser) {
       if (err) { console.error(err); }
@@ -301,6 +327,32 @@ app.put('/user/:id', function(req, res) { //email: email, number:number, descrip
 
 
 //Server init to listen on port 3000 -> Needs to be altered for deployment
-app.listen(process.env.PORT);
+
+server.listen(process.env.PORT);
 console.log(`RECRAC server running on :${process.env.PORT}`);
 //here is a change.
+
+var users = [];
+
+ws.on('connection', function(socket) {
+  socket.on('getUserInfo', (info) => {
+    console.log('sId', socket.id);
+    info.data.user.socketId = socket.id;
+    users.push(info.data.user);
+    console.log('added user');
+  });
+
+  socket.on('postComment', (comment) => {
+    const {id } = comment;
+    console.log('comment', comment);
+    users.forEach((user) => {
+      if (user.hostedEvents.includes (id)) {
+        ws.to(user.socketId).emit('addAlert', {user: comment.user.user, eventName: comment.eventName, comment });
+      }
+    });
+  });
+});
+
+
+//here is a change.
+
