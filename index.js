@@ -6,13 +6,14 @@ const Message = require('./models/message');
 const User = require('./models/user');
 const Event = require('./models/event');
 // Server Stuff
-const express = require('express');
 const path = require('path');
 const flash = require('connect-flash');
 const morgan = require('morgan');
+const express = require('express');
 const session = require('express-session');
-const bodyParser = require('body-parser');
 const passport = require('passport');
+const bodyParser = require('body-parser');
+const controller = require('./server/controller.js');
 const FacebookStrategy = require('passport-facebook').Strategy;
 const app = express();
 
@@ -299,8 +300,10 @@ app.put('/user/:id', function(req, res) { //email: email, number:number, descrip
   });
 });
 
-
+app.post('/bid', controller.makeBid);
 //Server init to listen on port 3000 -> Needs to be altered for deployment
 app.listen(process.env.PORT);
 console.log(`RECRAC server running on :${process.env.PORT}`);
 //here is a change.
+
+module.exports = app;

@@ -13,10 +13,12 @@ var eventSchema = new mongoose.Schema({
   time: String,
   price: Number,
   confirmedParticipants: [{user: String, photo: String, email: String}],
-  potentialParticipants: [{user: String, photo: String, email: String}]
+  potentialParticipants: [{user: String, photo: String, email: String}],
+  bids: [{max: Number, curr: Number, user: String}],
 });
 
 eventSchema.pre('save', function(next) {
+  if (!this.location.lng) { return next(); }
   request(geocodeURL + this.location.address, (err, response, body) => {
     if (err) {
       console.error(err);

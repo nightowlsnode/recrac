@@ -66,6 +66,9 @@ h2 {
   background:
     url('./pic/game.jpg') bottom right 15% no-repeat #46B6AC;
 }
+.mdl-layout__obfuscator {
+  position: fixed;
+}
 
 /*.snippet-demo-container.mdl-card__title.mdl-card--expand {
     height: 150px;
@@ -212,6 +215,7 @@ h2 {
 
 .mdl-layout__drawer.is-visible {
     z-index: 10;
+    position: fixed;
 }
 
 md-input-container.md-input-focused label {
