@@ -14,6 +14,8 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook').Strategy;
+const httpServer = require('http').Server;
+const socket = require('socket.io');
 const app = express();
 const server = httpServer(app);
 const ws = socket(server);
@@ -316,7 +318,7 @@ server.listen(process.env.PORT);
 console.log(`RECRAC server running on :${process.env.PORT}`);
 //here is a change.
 
-server.listen(port);
+
 console.log('Greenfield server running on :3000');
 var users = [];
 
