@@ -3,7 +3,7 @@ angular.module('App')
     const applicationServerKey = 'BDp0w78QW3zcmNKls3-GeSjXSmLQyWHEs7sxTY00LnONZ4u5_WDJOlSxLQdS_rfGo7L2uaynENhibULYm08-upA';
     var swRegistration = null;
 
-    //helper function  to convert key to expected input of subscribe call
+    //helper function  to convert key to expected input of subscribe call (From Google Developers on Push Notifications)
 
     const urlB64ToUint8Array = function (base64String) {
       const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -77,8 +77,6 @@ angular.module('App')
         body: JSON.stringify(data)
       });
     };
-
-   
 
     // Check to see if browser has Push and SW Support & register SW
     const setupSubscription = function () {
