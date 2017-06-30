@@ -41,7 +41,9 @@
     "passport": "^0.3.2",
     "passport-facebook": "^2.1.1",
     "request": "^2.81.0",
-    "ui-leaflet": "^1.0.3"
+    "socket.io": "^2.0.3",
+    "ui-leaflet": "^1.0.3",
+    "web-push": "^3.2.2"
   },
   "devDependencies": {
     "node-env-file": "^0.1.8"
