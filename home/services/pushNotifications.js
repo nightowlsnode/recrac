@@ -3,7 +3,7 @@ angular.module('App')
     const applicationServerKey = 'BDp0w78QW3zcmNKls3-GeSjXSmLQyWHEs7sxTY00LnONZ4u5_WDJOlSxLQdS_rfGo7L2uaynENhibULYm08-upA';
     var swRegistration = null;
 
-    //helper function  to convert key to expected input of subscribe call (From Google Developers on Push Notifications)
+    //Helper function  to convert key to expected input of subscribe call (From Google Developers on Push Notifications)
 
     const urlB64ToUint8Array = function (base64String) {
       const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -62,7 +62,7 @@ angular.module('App')
       return swRegistration.pushManager.subscribe(options)
         .then(function(pushSubscription) {
           console.log('Received Sub');
-          
+        
           return pushSubscription;
         });
     };
