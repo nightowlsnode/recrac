@@ -13,12 +13,12 @@ var eventSchema = new mongoose.Schema({
   time: String,
   price: Number,
   currentPrice: Number,
-  confirmedParticipants: [{user: String, photo: String, email: String, currBid: Number}],
-  potentialParticipants: [{user: String, photo: String, email: String, currBid: Number}],
   bids: [{max: Number, curr: Number, user: {id: String, photo: String, email: String, curr: Number}}],
   rating: Number,
   rateAmount: {type: Number, default: 0},
-  ratingParticipants: Array
+  ratingParticipants: Array,
+  confirmedParticipants: [{user: String, photo: String, email: String}],
+  potentialParticipants: [{user: String, photo: String, email: String}]
 });
 
 eventSchema.pre('save', function(next) {
