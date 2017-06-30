@@ -13,7 +13,7 @@ const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
 const bodyParser = require('body-parser');
-const controller = require('./server/controller.js');
+const biddingController = require('./server/biddingController.js');
 const FacebookStrategy = require('passport-facebook').Strategy;
 const httpServer = require('http').Server;
 const socket = require('socket.io');
@@ -329,7 +329,7 @@ app.put('/user/:id', function(req, res) { //email: email, number:number, descrip
   });
 });
 
-app.post('/bid', controller.makeBid);
+app.post('/bid', biddingController.makeBid);
 
 app.post('/subs', (req, res) => {
   User.findById(req.body._id)
