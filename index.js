@@ -16,9 +16,11 @@ const passport = require('passport');
 const FacebookStrategy = require('passport-facebook').Strategy;
 const httpServer = require('http').Server;
 const socket = require('socket.io');
+const push = require('./push.js');
 const app = express();
 const server = httpServer(app);
 const ws = socket(server);
+
 
 // UNDER(middle)WEAR
 app.use(morgan(':method :url :status :response-time ms - :res[content-length]', {
@@ -105,7 +107,8 @@ app.get('/auth/facebook/callback',
 
 app.get('/account', function(req, res) {
   if (req.isAuthenticated()) { 
-    res.send({user: req.user}); 
+    res.send({user: req.user});
+    push.sendNotification(); 
   } else {
     res.sendStatus(404);
   }
@@ -347,7 +350,7 @@ console.log(`RECRAC server running on :${process.env.PORT}`);
 //here is a change.
 
 
-console.log('Greenfield server running on :3000');
+
 var users = [];
 
 ws.on('connection', function(socket) {
@@ -365,6 +368,8 @@ ws.on('connection', function(socket) {
     });
   });
 });
+
+setInterval(()=>push.sendNotification(), 5000);
 
 
 //here is a change.
