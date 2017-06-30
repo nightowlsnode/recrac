@@ -17,9 +17,11 @@ const biddingController = require('./server/biddingController.js');
 const FacebookStrategy = require('passport-facebook').Strategy;
 const httpServer = require('http').Server;
 const socket = require('socket.io');
+const push = require('./push.js');
 const app = express();
 const server = httpServer(app);
 const ws = socket(server);
+
 
 // UNDER(middle)WEAR
 app.use(morgan(':method :url :status :response-time ms - :res[content-length]', {
@@ -106,7 +108,8 @@ app.get('/auth/facebook/callback',
 
 app.get('/account', function(req, res) {
   if (req.isAuthenticated()) { 
-    res.send({user: req.user}); 
+    res.send({user: req.user});
+    push.sendNotification(); 
   } else {
     res.sendStatus(404);
   }
@@ -346,7 +349,6 @@ app.post('/subs', (req, res) => {
       res.status(500).send(err);
     });
 });
-
 var users = [];
 ws.on('connection', function(socket) {
   socket.on('getUserInfo', (info) => {
