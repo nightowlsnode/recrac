@@ -35,6 +35,17 @@ angular.module('App')
         });
     };
 
+    $scope.saveRating = function() {
+      $http.put('/events/' + $scope.id, {event: $scope.id, user: '', rating: $scope.rating}, {contentType: 'application/json'})
+        .then(function (response) {
+          console.log('Rating Successful: ', response);
+          $scope.rating = response.data.rating;
+        })
+        .catch(function(err) {
+          console.error('Post Failed: ', err);
+        });
+    };
+
     $scope.showData = function(eventId, participantName ) {
       console.log('dnwbuiy');
       $http.put('/confirmParticipant', {eventId: eventId, participantName: participantName}, {contentType: 'application/json'})

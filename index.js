@@ -140,6 +140,10 @@ app.post('/message', function(req, res) {
   });
 });
 
+app.post('/rating', function (req, res) {
+
+})
+
 app.get('/message/:eventId', function(req, res) {
   Message.find({event: req.param('eventId')}, function(err, newMessages) {
     if (err) {
@@ -214,45 +218,51 @@ app.put('/events', function(req, res) {
 
 app.put('/events/:id', function(req, res) {
   // Geting the event to update
+  console.log('request is ', req.body.rating);
   Event.findOne({_id: req.param('id')}, function(err, newEvent) {
     // Updating all the information from the event
     // **********************************************************************
-    if (req.body.name) {
-      newEvent.name = req.body.name;   
-    }
-    if (req.body.description) {
-      newEvent.description = req.body.description;
-    }
+    // if (req.body.name) {
+    //   newEvent.name = req.body.name;   
+    // }
+    // if (req.body.description) {
+    //   newEvent.description = req.body.description;
+    // }
     
-    if (req.user) {
-      newEvent.host = req.user.user;
-    }
+    // if (req.user) {
+    //   newEvent.host = req.user.user;
+    // }
     
-    if (req.body.type) {
-      newEvent.type = req.body.type;
-    }
+    // if (req.body.type) {
+    //   newEvent.type = req.body.type;
+    // }
     
-    if (req.body.time) {
-      newEvent.time = req.body.time;
-    }
-    if (req.body.price) {
-      newEvent.price = req.body.price || 0;
-    }
-    if (req.body.desiredParticipants) {
-      newEvent.desiredParticipants = req.body.desiredParticipants;
-    }
+    // if (req.body.time) {
+    //   newEvent.time = req.body.time;
+    // }
+    // if (req.body.price) {
+    //   newEvent.price = req.body.price || 0;
+    // }
+    // if (req.body.desiredParticipants) {
+    //   newEvent.desiredParticipants = req.body.desiredParticipants;
+    // }
     
-    if (req.body.location) {
-      newEvent.location = {
-        address: req.body.location,
-        lng: 0, 
-        lat: 0
-      };
-    }
+    // if (req.body.location) {
+    //   newEvent.location = {
+    //     address: req.body.location,
+    //     lng: 0, 
+    //     lat: 0
+    //   };
+    // }
+      newEvent.ratingParticipants.push(req.user.ratingUser);
+      newEvent.rateAmount += 1;
+      newEvent.rating = ((newEvent.rating * (newEvent.rateAmount - 1)) + Number(req.body.rating)) / newEvent.rateAmount;
+    
     // **********************************************************************
     
     // Saving the changed fields
     newEvent.save(function(err, updatedEvent) {
+      updatedEvent.bids = null;
       res.send(updatedEvent);
     });
   });
