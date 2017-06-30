@@ -44,6 +44,28 @@
             </p>
 
             <p style="margin: 0 0 10px 0;font-style: italic;font-size: 0.9em;">{{event.desiredParticipants}} spots remaining!</p>
+           <!-- RATING -->
+           <rating-directive></rating-directive>
+           <p>Rating: {{event.rating | number:0}}</p>
+           <div layout="column" class="md-inline-form">
+              <md-content layout-gt-sm="row" layout-padding>
+                <div style="width: 100%">
+                  <form name="eventRating">
+                    <div layout-gt-lg="row"> 
+                         <input type="radio" value="1" ng-model="rating" />1 
+                         <input type="radio" value="2" ng-model="rating" />2 
+                         <input type="radio" value="3" ng-model="rating" />3 
+                         <input type="radio" value="4" ng-model="rating" />4 
+                         <input type="radio" value="5" ng-model="rating" />5 
+                      
+                      <a ng-click="saveRating()" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">Add Rating</a>
+                    </div>
+                  </form>
+                </div>
+              </md-content>
+            </div>
+                
+         
             <!-- Replace above <p style="margin: 0 0 10px 0;font-style: italic;font-size: 0.9em;">{{ event.confirmedParticipants }} out of {{ event.desiredParticipants }} </p> -->
             <div> <!-- ng-show="event.host.user === user.data.user.user" -->
               <span>Potential Participants</span>
