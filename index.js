@@ -218,7 +218,7 @@ app.put('/events', function(req, res) {
 
 app.put('/events/:id', function(req, res) {
   // Geting the event to update
-  console.log('request is ', req.body.rating);
+  console.log('request is ', req.user.email);
   Event.findOne({_id: req.param('id')}, function(err, newEvent) {
     // Updating all the information from the event
     // **********************************************************************
@@ -254,17 +254,24 @@ app.put('/events/:id', function(req, res) {
     //     lat: 0
     //   };
     // }
-      newEvent.ratingParticipants.push(req.user.ratingUser);
+
+    if (newEvent.ratingParticipants.indexOf(req.user.email) === -1) {
+      newEvent.ratingParticipants.push(req.user.email);
       newEvent.rateAmount += 1;
       newEvent.rating = ((newEvent.rating * (newEvent.rateAmount - 1)) + Number(req.body.rating)) / newEvent.rateAmount;
     
-    // **********************************************************************
+      
+      
     
-    // Saving the changed fields
-    newEvent.save(function(err, updatedEvent) {
-      updatedEvent.bids = null;
-      res.send(updatedEvent);
-    });
+      // **********************************************************************
+    
+      // Saving the changed fields
+      newEvent.save(function(err, updatedEvent) {
+        res.send(updatedEvent);
+      });
+    } else {
+      res.status(400).send('Already Rated');
+    }
   });
 });
 
