@@ -44,7 +44,6 @@ passport.use(new FacebookStrategy({
   profileFields: ['id', 'displayName', 'photos', 'emails']
 },
 function(accessToken, refreshToken, profile, done) {
-  console.log('this is the facebook returned profile', profile);
   User.findOne({
     'facebook.id': profile.id
   }, function(err, user) {
@@ -83,7 +82,6 @@ function(accessToken, refreshToken, profile, done) {
 // example does not have a database, the complete Facebook profile is serialized
 // and deserialized.
 passport.serializeUser(function(user, done) {
-  console.log('serialize user: ', user.user);
   done(null, user.facebook.id);
 });
 
@@ -187,11 +185,9 @@ app.post('/events', function(req, res) {
 
 app.put('/confirmParticipant', function(req, res) {
   User.findOne({user: req.body.participantName}, function(err, joiner) {
-    console.log('A');
     if (err) {
       res.status(500).send(err);
     } else {
-      console.log('A');
       var joinerObj = {$push: {confirmedParticipants: {user: joiner.user, photo: joiner.picture, email: joiner.email}},
         $pull: {potentialParticipants: {user: joiner.user}}};
       console.log(req.body);
@@ -295,7 +291,6 @@ app.get('/events/:id', function(req, res) {
 app.put('/user/:id', function(req, res) { //email: email, number:number, description: description
   // Geting the event to update
   User.findOne({'facebook.id': req.param('id')}, function(err, newUser) {
-    console.log('newUser on line 278 is ', newUser);
     // Updating all the information from the event
     // **********************************************************************
     newUser.email = req.body.email;
@@ -311,6 +306,22 @@ app.put('/user/:id', function(req, res) { //email: email, number:number, descrip
   });
 });
 
+app.post('/subs', (req, res) => {
+  User.findById(req.body._id)
+    .then(user => {
+      user.pushSub = req.body.subscription;
+      return user.save();
+    })
+    .then((updatedUser) => {
+      console.log(updatedUser);
+      res.status(200).send();
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send(err);
+    });
+});
+
 
 //Server init to listen on port 3000 -> Needs to be altered for deployment
 
@@ -324,15 +335,12 @@ var users = [];
 
 ws.on('connection', function(socket) {
   socket.on('getUserInfo', (info) => {
-    console.log('sId', socket.id);
     info.data.user.socketId = socket.id;
     users.push(info.data.user);
-    console.log('added user');
   });
 
   socket.on('postComment', (comment) => {
     const {id } = comment;
-    console.log('comment', comment);
     users.forEach((user) => {
       if (user.hostedEvents.includes (id)) {
         ws.to(user.socketId).emit('addAlert', {user: comment.user.user, eventName: comment.eventName, comment });
