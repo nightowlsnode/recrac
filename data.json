@@ -8,7 +8,9 @@
   "time": "09:00:PM",
   "price": 0,
   "confirmedParticipants": [{"user": "David R Earle", "photo": "", "email": ""}],
-  "potentialParticipants": []
+  "potentialParticipants": [],
+  "rateAmount": 1,
+  "rating": 4
 },
 {
   "name": "Pasta Party",
@@ -18,9 +20,10 @@
   "location": { "address": "200 Lexington Ave, New York, NY, United States", "lng": 0, "lat": 0 },
   "desiredParticipants": 3,
   "time": "09:00:PM",
-  "price": 0,
+  "price": 10,
   "confirmedParticipants": [{"user": "David R Earle", "photo": "", "email": ""}],
-  "potentialParticipants": []
+  "potentialParticipants": [],
+  "bids": [{"max": 20, "curr": 10, "user": "10159148052460647"}]
 },
 {
   "name": "Transformers Audition",
@@ -32,7 +35,10 @@
   "time": "09:00:AM",
   "price": 0,
   "confirmedParticipants": [],
-  "potentialParticipants": []
+  "potentialParticipants": [],
+  "rateAmount": 1,
+  "rating": 3,
+  "bids": [{"max": 20, "curr": 0, "user": "10159148052460647"}]
 },
 {
   "name": "Extras for Suits Episode",
@@ -44,7 +50,10 @@
   "time": "01:00:PM",
   "price": 0,
   "confirmedParticipants": [],
-  "potentialParticipants": []
+  "potentialParticipants": [],
+  "rateAmount": 6,
+  "rating": 3.8,
+  "bids": [{"max": 20, "curr": 4, "user": "10159148052460647"}]
 },
 {
   "name": "Tennis Lesson",
@@ -54,9 +63,12 @@
   "location": { "address": "150 Madison Avenue, New York, NY, United States", "lng": 0, "lat": 0 },
   "desiredParticipants": 2,
   "time": "11:00:AM",
-  "price": 20,
+  "price": 4,
   "confirmedParticipants": [],
-  "potentialParticipants": []
+  "potentialParticipants": [],
+  "rateAmount": 1,
+  "rating": 5,
+  "bids": [{"max": 20, "curr": 4, "user": "10159148052460647"}, {"max": 20, "curr": 4, "user": "10212011243929172"}]
 },
 {
   "name": "Piano Lesson",
@@ -68,7 +80,10 @@
   "time": "10:00:AM",
   "price": 25,
   "confirmedParticipants": [{"user": "David R Earle", "photo": "", "email": ""}],
-  "potentialParticipants": []
+  "potentialParticipants": [],
+  "rateAmount": 0,
+  "rating": null,
+  "bids": null 
 },
 {
   "name": "BBQ/Block Party",
@@ -80,7 +95,10 @@
   "time": "09:00:PM",
   "price": 0,
   "confirmedParticipants": [],
-  "potentialParticipants": []
+  "potentialParticipants": [],
+  "rateAmount": 3,
+  "rating": 4.3,
+  "bids": [{"max": 20, "curr": 0, "user": "10159148052460647"}, {"max": 20, "curr": 0, "user": "10212011243929172"}]
 },
 {
   "name": "Javascript Intro Class",
@@ -90,7 +108,10 @@
   "location": { "address": "150 Third Avenue, New York, NY, United States", "lng": 0, "lat": 0 },
   "desiredParticipants": 10,
   "time": "08:00:PM",
-  "price": 0,
+  "price": 15,
   "confirmedParticipants": [{"user": "Bob Bobson", "photo": "", "email": ""}],
-  "potentialParticipants": []
+  "potentialParticipants": [],
+  "rateAmount": 1,
+  "rating": 1,
+  "bids": [{"max": 20, "curr": 15, "user": "10159148052460647"}, {"max": 20, "curr": 15, "user": "10212011243929172"}]
 }]

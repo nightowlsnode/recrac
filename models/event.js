@@ -12,8 +12,8 @@ var eventSchema = new mongoose.Schema({
   desiredParticipants: Number,
   time: String,
   price: Number,
-  confirmedParticipants: [{user: String, photo: String, email: String}],
-  potentialParticipants: [{user: String, photo: String, email: String}],
+  confirmedParticipants: [{user: String, photo: String, email: String, currBid: Number}],
+  potentialParticipants: [{user: String, photo: String, email: String, currBid: Number}],
   bids: [{max: Number, curr: Number, user: String}],
 });
 

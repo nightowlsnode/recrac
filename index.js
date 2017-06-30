@@ -168,6 +168,7 @@ app.post('/events', function(req, res) {
     if (err) {
       res.status(500).send(err);
     } else {
+      newEvent.bids = null;
       res.status(200).send(newEvent);
     }
   });
@@ -188,6 +189,7 @@ app.put('/confirmParticipant', function(req, res) {
         if (err) {
           res.status(500).send(err);
         } else {
+          updatedEvent.bids = null;
           res.status(200).send(updatedEvent);
         }
       });
@@ -206,6 +208,7 @@ app.put('/events', function(req, res) {
         if (err) {
           res.status(500).send(err);
         } else {
+          updatedEvent.bids = null;
           res.status(200).send(updatedEvent);
         }
       });
@@ -264,6 +267,7 @@ app.get('/events', function(req, res) {
     if (err) {
       res.status(500).send(err);
     } else {
+      events.forEach((event) => event.bids = null);
       res.status(200).send(events);
     }
   });
@@ -275,7 +279,8 @@ app.get('/events/:id', function(req, res) {
       res.send({
         error: err
       });
-    } else {
+    } else { 
+      newEvent.bids = null;
       res.send(newEvent);
     }
   });

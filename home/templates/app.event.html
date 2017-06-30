@@ -94,7 +94,6 @@
             </form>
 
             <span>Confirmed Participants</span>
-            <p style="margin: 0 0 10px 0;font-style: italic;font-size: 0.9em;">{{(event.desiredParticipants) | number:0}} spots remaining!</p>
             <p style="margin: 5px 0 0;">
               <img ng-src="{{event.host.photo || 'http://donatered-asset.s3.amazonaws.com/assets/default/default_user-884fcb1a70325256218e78500533affb.jpg'}}" style="width: 50px"/>
               <img ng-repeat="participant in event.confirmedParticipants" ng-src="{{participant.photo || 'http://donatered-asset.s3.amazonaws.com/assets/default/default_user-884fcb1a70325256218e78500533affb.jpg'}}" style="width: 50px"/>

@@ -4,18 +4,37 @@ const User = require('../models/user');
 const Event = require('../models/event');
 
 exports.makeBid = (req, res, next) => {
-  let newBid = { curr: 0, max: req.body.bid, user: req.session.passport.user };
+  let newBid = { curr: 0, max: req.body.bid, user: req.user._id };
   Event.findOne({_id: req.body.event}, function(err, event) {
     if (err) {
       res.send({
         error: err
       });
     } else {
-      event.bids = sortBids(event.bids, newBid, event.desiredParticipants);
-      event.save();
+      for (var i = 0; i < event.bids.length; i++) {
+        let bid = event.bids[i];
+        if (newBid.user === bid.user._id) {
+          bid.max = newBid.max;
+          newBid = bid;
+          break;
+        } else if (i === event.bids.length - 1) {
+          User.findOne({_id: req.user._id}, function(err, bidder) {
+            if (err) {
+              res.status(500).send(err);
+            } else {
+              var bidderObj = {potentialParticipants: {user: bidder.user, photo: bidder.picture, email: bidder.email}};
+              event.bids = sortBids(event.bids, newBid, event.desiredParticipants);
+              event.potentialParticipants = event.bids.slice(0, event.desiredParticipants)
+                .map((bid) => bid.user);
+              event.save();
+            }
+          });
+        }
+      }
     }
   });
 };
+
 
 const sortBids = (bids, newBid, eventSize) => {
   if (!bids) {
