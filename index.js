@@ -6,13 +6,14 @@ const Message = require('./models/message');
 const User = require('./models/user');
 const Event = require('./models/event');
 // Server Stuff
-const express = require('express');
 const path = require('path');
 const flash = require('connect-flash');
 const morgan = require('morgan');
+const express = require('express');
 const session = require('express-session');
-const bodyParser = require('body-parser');
 const passport = require('passport');
+const bodyParser = require('body-parser');
+const biddingController = require('./server/biddingController.js');
 const FacebookStrategy = require('passport-facebook').Strategy;
 const httpServer = require('http').Server;
 const socket = require('socket.io');
@@ -178,6 +179,7 @@ app.post('/events', function(req, res) {
     if (err) {
       res.status(500).send(err);
     } else {
+      newEvent.bids = null;
       res.status(200).send(newEvent);
       User.findById(req.user._id)
         .then ((user) => {
@@ -202,6 +204,7 @@ app.put('/confirmParticipant', function(req, res) {
         if (err) {
           res.status(500).send(err);
         } else {
+          updatedEvent.bids = null;
           res.status(200).send(updatedEvent);
         }
       });
@@ -220,6 +223,7 @@ app.put('/events', function(req, res) {
         if (err) {
           res.status(500).send(err);
         } else {
+          updatedEvent.bids = null;
           res.status(200).send(updatedEvent);
         }
       });
@@ -291,6 +295,7 @@ app.get('/events', function(req, res) {
     if (err) {
       res.status(500).send(err);
     } else {
+      events.forEach((event) => event.bids = null);
       res.status(200).send(events);
     }
   });
@@ -302,7 +307,8 @@ app.get('/events/:id', function(req, res) {
       res.send({
         error: err
       });
-    } else {
+    } else { 
+      newEvent.bids = null;
       res.send(newEvent);
     }
   });
@@ -326,6 +332,8 @@ app.put('/user/:id', function(req, res) { //email: email, number:number, descrip
   });
 });
 
+app.post('/bid', biddingController.makeBid);
+
 app.post('/subs', (req, res) => {
   User.findById(req.body._id)
     .then(user => {
@@ -341,16 +349,7 @@ app.post('/subs', (req, res) => {
       res.status(500).send(err);
     });
 });
-
-
-//Server init to listen on port 3000 -> Needs to be altered for deployment
-
-server.listen(process.env.PORT);
-console.log(`RECRAC server running on :${process.env.PORT}`);
-//here is a change.
-
 var users = [];
-
 ws.on('connection', function(socket) {
   socket.on('getUserInfo', (info) => {
     info.data.user.socketId = socket.id;
@@ -367,4 +366,8 @@ ws.on('connection', function(socket) {
   });
 });
 
+//Server init to listen on port 3000 -> Needs to be altered for deployment
+server.listen(process.env.PORT);
+console.log(`RECRAC server running on :${process.env.PORT}`);
 
+module.exports = app;

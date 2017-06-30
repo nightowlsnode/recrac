@@ -8,7 +8,10 @@
   "time": "09:00:PM",
   "price": 0,
   "confirmedParticipants": [{"user": "David R Earle", "photo": "", "email": ""}],
-  "potentialParticipants": []
+  "potentialParticipants": [],
+  "rateAmount": 1,
+  "rating": 4,
+  "ratingParticipants": [{"email": "matt.smith861@gmail.com"}]
 },
 {
   "name": "Pasta Party",
@@ -18,7 +21,7 @@
   "location": { "address": "200 Lexington Ave, New York, NY, United States", "lng": 0, "lat": 0 },
   "desiredParticipants": 3,
   "time": "09:00:PM",
-  "price": 0,
+  "price": 10,
   "confirmedParticipants": [{"user": "David R Earle", "photo": "", "email": ""}],
   "potentialParticipants": []
 },
@@ -32,7 +35,9 @@
   "time": "09:00:AM",
   "price": 0,
   "confirmedParticipants": [],
-  "potentialParticipants": []
+  "potentialParticipants": [],
+  "rateAmount": 1,
+  "rating": 3
 },
 {
   "name": "Extras for Suits Episode",
@@ -44,7 +49,9 @@
   "time": "01:00:PM",
   "price": 0,
   "confirmedParticipants": [],
-  "potentialParticipants": []
+  "potentialParticipants": [],
+  "rateAmount": 6,
+  "rating": 3.8
 },
 {
   "name": "Tennis Lesson",
@@ -54,9 +61,11 @@
   "location": { "address": "150 Madison Avenue, New York, NY, United States", "lng": 0, "lat": 0 },
   "desiredParticipants": 2,
   "time": "11:00:AM",
-  "price": 20,
+  "price": 4,
   "confirmedParticipants": [],
-  "potentialParticipants": []
+  "potentialParticipants": [],
+  "rateAmount": 1,
+  "rating": 5
 },
 {
   "name": "Piano Lesson",
@@ -68,7 +77,9 @@
   "time": "10:00:AM",
   "price": 25,
   "confirmedParticipants": [{"user": "David R Earle", "photo": "", "email": ""}],
-  "potentialParticipants": []
+  "potentialParticipants": [],
+  "rateAmount": 0,
+  "rating": null
 },
 {
   "name": "BBQ/Block Party",
@@ -80,7 +91,9 @@
   "time": "09:00:PM",
   "price": 0,
   "confirmedParticipants": [],
-  "potentialParticipants": []
+  "potentialParticipants": [],
+  "rateAmount": 3,
+  "rating": 4.3
 },
 {
   "name": "Javascript Intro Class",
@@ -90,7 +103,9 @@
   "location": { "address": "150 Third Avenue, New York, NY, United States", "lng": 0, "lat": 0 },
   "desiredParticipants": 10,
   "time": "08:00:PM",
-  "price": 0,
+  "price": 15,
   "confirmedParticipants": [{"user": "Bob Bobson", "photo": "", "email": ""}],
-  "potentialParticipants": []
+  "potentialParticipants": [],
+  "rateAmount": 1,
+  "rating": 1
 }]

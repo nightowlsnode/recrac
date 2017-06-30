@@ -37,6 +37,20 @@ angular.module('App')
           console.error('Post Failed: ', err);
         });
     };
+    $scope.makeBid = function() {
+      const bid = $scope.bid ? $scope.bid.text : 0;
+      const event = $scope.id;
+
+      $http.post('/bid', {event, bid}, {contentType: 'application/json'})
+        .then(function (response) {
+          $scope.event = response.data;
+          console.log('Post Successful: ', response); 
+          $scope.bid.text = ''; 
+        })
+        .catch(function (err) {
+          console.error('Post Failed: ', err);
+        });
+    };
 
     $scope.saveRating = function() {
       $http.put('/events/' + $scope.id, {event: $scope.id, user: '', rating: $scope.rating}, {contentType: 'application/json'})
