@@ -349,8 +349,6 @@ server.listen(process.env.PORT);
 console.log(`RECRAC server running on :${process.env.PORT}`);
 //here is a change.
 
-
-
 var users = [];
 
 ws.on('connection', function(socket) {
@@ -369,8 +367,4 @@ ws.on('connection', function(socket) {
   });
 });
 
-setInterval(()=>push.sendNotification(), 5000);
-
-
-//here is a change.
 
