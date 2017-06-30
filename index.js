@@ -15,7 +15,11 @@ const passport = require('passport');
 const bodyParser = require('body-parser');
 const controller = require('./server/controller.js');
 const FacebookStrategy = require('passport-facebook').Strategy;
+const httpServer = require('http').Server;
+const socket = require('socket.io');
 const app = express();
+const server = httpServer(app);
+const ws = socket(server);
 
 // UNDER(middle)WEAR
 app.use(morgan(':method :url :status :response-time ms - :res[content-length]', {
@@ -33,13 +37,14 @@ app.use(express.static(path.resolve(__dirname, './home')));
 
 //Passport facebook strategy config:
 passport.use(new FacebookStrategy({
+
   clientID: process.env.FACEBOOK_APP_ID, 
   clientSecret: process.env.FACEBOOK_APP_SECRET, 
   callbackURL: process.env.FACEBOOK_CB_URL,
+
   profileFields: ['id', 'displayName', 'photos', 'emails']
 },
 function(accessToken, refreshToken, profile, done) {
-  console.log('this is the facebook returned profile', profile);
   User.findOne({
     'facebook.id': profile.id
   }, function(err, user) {
@@ -78,7 +83,6 @@ function(accessToken, refreshToken, profile, done) {
 // example does not have a database, the complete Facebook profile is serialized
 // and deserialized.
 passport.serializeUser(function(user, done) {
-  console.log('serialize user: ', user.user);
   done(null, user.facebook.id);
 });
 
@@ -174,6 +178,12 @@ app.post('/events', function(req, res) {
     } else {
       newEvent.bids = null;
       res.status(200).send(newEvent);
+      User.findById(req.user._id)
+        .then ((user) => {
+          user.hostedEvents.push(newEvent._id);
+          return user.save()
+            .catch((err) => console.log(err));
+        });
     }
   });
 });
@@ -181,11 +191,9 @@ app.post('/events', function(req, res) {
 
 app.put('/confirmParticipant', function(req, res) {
   User.findOne({user: req.body.participantName}, function(err, joiner) {
-    console.log('A');
     if (err) {
       res.status(500).send(err);
     } else {
-      console.log('A');
       var joinerObj = {$push: {confirmedParticipants: {user: joiner.user, photo: joiner.picture, email: joiner.email}},
         $pull: {potentialParticipants: {user: joiner.user}}};
       console.log(req.body);
@@ -306,7 +314,6 @@ app.get('/events/:id', function(req, res) {
 app.put('/user/:id', function(req, res) { //email: email, number:number, description: description
   // Geting the event to update
   User.findOne({'facebook.id': req.param('id')}, function(err, newUser) {
-    console.log('newUser on line 278 is ', newUser);
     // Updating all the information from the event
     // **********************************************************************
     newUser.email = req.body.email;
@@ -323,9 +330,42 @@ app.put('/user/:id', function(req, res) { //email: email, number:number, descrip
 });
 
 app.post('/bid', controller.makeBid);
+
+app.post('/subs', (req, res) => {
+  User.findById(req.body._id)
+    .then(user => {
+      user.pushSub = req.body.subscription;
+      return user.save();
+    })
+    .then((updatedUser) => {
+      console.log(updatedUser);
+      res.status(200).send();
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send(err);
+    });
+});
+
+var users = [];
+ws.on('connection', function(socket) {
+  socket.on('getUserInfo', (info) => {
+    info.data.user.socketId = socket.id;
+    users.push(info.data.user);
+  });
+
+  socket.on('postComment', (comment) => {
+    const {id } = comment;
+    users.forEach((user) => {
+      if (user.hostedEvents.includes (id)) {
+        ws.to(user.socketId).emit('addAlert', {user: comment.user.user, eventName: comment.eventName, comment });
+      }  
+    });
+  });
+});
+
 //Server init to listen on port 3000 -> Needs to be altered for deployment
-app.listen(process.env.PORT);
+server.listen(process.env.PORT);
 console.log(`RECRAC server running on :${process.env.PORT}`);
-//here is a change.
 
 module.exports = app;

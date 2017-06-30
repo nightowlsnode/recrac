@@ -1,5 +1,5 @@
 angular.module('App')
-  .controller('eventController', function ($scope, $stateParams, userService, $state, mappingTools, $http) {
+  .controller('eventController', function ($scope, $stateParams, userService, $state, mappingTools, $http, socket) {
     userService
       .authenticate()
       .then(function (user) { 
@@ -29,6 +29,9 @@ angular.module('App')
       $http.post('/message', {event: $scope.id, user: '', text: $scope.message.text}, {contentType: 'application/json'})
         .then(function (response) {
           console.log('Post Successful: ', response);  
+        })
+        .then(() =>{
+          socket.emit('postComment', {id: $scope.id, user: $scope.user.data.user, eventName: $scope.event.name });
         })
         .catch(function (err) {
           console.error('Post Failed: ', err);
