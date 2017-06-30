@@ -12,13 +12,17 @@ var eventSchema = new mongoose.Schema({
   desiredParticipants: Number,
   time: String,
   price: Number,
+  currentPrice: Number,
   confirmedParticipants: [{user: String, photo: String, email: String, currBid: Number}],
   potentialParticipants: [{user: String, photo: String, email: String, currBid: Number}],
-  bids: [{max: Number, curr: Number, user: String}],
+  bids: [{max: Number, curr: Number, user: {id: String, photo: String, email: String, curr: Number}}],
+  rating: Number,
+  rateAmount: {type: Number, default: 0},
+  ratingParticipants: Array
 });
 
 eventSchema.pre('save', function(next) {
-  if (!this.location.lng) { return next(); }
+  if (this.location.lng) { return next(); }
   request(geocodeURL + this.location.address, (err, response, body) => {
     if (err) {
       console.error(err);

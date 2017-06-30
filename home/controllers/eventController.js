@@ -40,7 +40,7 @@ angular.module('App')
 
       $http.post('/bid', {event, bid}, {contentType: 'application/json'})
         .then(function (response) {
-          $scope.event.bids = response;
+          $scope.event = response.data;
           console.log('Post Successful: ', response);  
         })
         .catch(function (err) {

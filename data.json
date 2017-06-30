@@ -10,7 +10,8 @@
   "confirmedParticipants": [{"user": "David R Earle", "photo": "", "email": ""}],
   "potentialParticipants": [],
   "rateAmount": 1,
-  "rating": 4
+  "rating": 4,
+  "ratingParticipants": [{"email": "matt.smith861@gmail.com"}]
 },
 {
   "name": "Pasta Party",
@@ -22,8 +23,7 @@
   "time": "09:00:PM",
   "price": 10,
   "confirmedParticipants": [{"user": "David R Earle", "photo": "", "email": ""}],
-  "potentialParticipants": [],
-  "bids": [{"max": 20, "curr": 10, "user": "10159148052460647"}]
+  "potentialParticipants": []
 },
 {
   "name": "Transformers Audition",
@@ -37,8 +37,7 @@
   "confirmedParticipants": [],
   "potentialParticipants": [],
   "rateAmount": 1,
-  "rating": 3,
-  "bids": [{"max": 20, "curr": 0, "user": "10159148052460647"}]
+  "rating": 3
 },
 {
   "name": "Extras for Suits Episode",
@@ -52,8 +51,7 @@
   "confirmedParticipants": [],
   "potentialParticipants": [],
   "rateAmount": 6,
-  "rating": 3.8,
-  "bids": [{"max": 20, "curr": 4, "user": "10159148052460647"}]
+  "rating": 3.8
 },
 {
   "name": "Tennis Lesson",
@@ -67,8 +65,7 @@
   "confirmedParticipants": [],
   "potentialParticipants": [],
   "rateAmount": 1,
-  "rating": 5,
-  "bids": [{"max": 20, "curr": 4, "user": "10159148052460647"}, {"max": 20, "curr": 4, "user": "10212011243929172"}]
+  "rating": 5
 },
 {
   "name": "Piano Lesson",
@@ -82,8 +79,7 @@
   "confirmedParticipants": [{"user": "David R Earle", "photo": "", "email": ""}],
   "potentialParticipants": [],
   "rateAmount": 0,
-  "rating": null,
-  "bids": null 
+  "rating": null
 },
 {
   "name": "BBQ/Block Party",
@@ -97,8 +93,7 @@
   "confirmedParticipants": [],
   "potentialParticipants": [],
   "rateAmount": 3,
-  "rating": 4.3,
-  "bids": [{"max": 20, "curr": 0, "user": "10159148052460647"}, {"max": 20, "curr": 0, "user": "10212011243929172"}]
+  "rating": 4.3
 },
 {
   "name": "Javascript Intro Class",
@@ -112,6 +107,5 @@
   "confirmedParticipants": [{"user": "Bob Bobson", "photo": "", "email": ""}],
   "potentialParticipants": [],
   "rateAmount": 1,
-  "rating": 1,
-  "bids": [{"max": 20, "curr": 15, "user": "10159148052460647"}, {"max": 20, "curr": 15, "user": "10212011243929172"}]
+  "rating": 1
 }]

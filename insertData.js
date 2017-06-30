@@ -19,7 +19,10 @@ const insertData = function() {
       time: item.time,
       price: item.price,
       confirmedParticipants: item.confirmedParticipants,
-      potentialParticipants: item.potentialParticipants
+      potentialParticipants: item.potentialParticipants,
+      rating: item.rating,
+      rateAmount: item.rateAmount,
+      ratingParticipants: item.ratingParticipants
     });
     newEvent.save(function (err, newEvent) {
       if (err) {
