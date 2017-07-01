@@ -15,9 +15,9 @@ angular.module('App')
     $scope.dateCheck = false;
 
     $scope.checkDate = function() {
-      console.log('todays date ', $scope.todaysDate.getTime());
-      console.log('event date is ', $scope.event.time.getTime())
-      console.log($scope.todaysDate - $scope.event.time);
+      // console.log('todays date ', $scope.todaysDate.getTime());
+      // console.log('event date is ', $scope.event.time.getTime())
+      // console.log($scope.todaysDate - $scope.event.time);
       if ($scope.todaysDate - $scope.event.time < 0) {
         return true;
       }
