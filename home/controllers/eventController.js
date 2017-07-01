@@ -13,6 +13,7 @@ angular.module('App')
     $scope.maxBid = null;
     $scope.todaysDate = new Date();
     $scope.dateCheck = false;
+    $scope.canRate = false;
 
     $scope.checkDate = function() {
       // console.log('todays date ', $scope.todaysDate.getTime());
@@ -26,6 +27,9 @@ angular.module('App')
       
     mappingTools.getEvent($scope.id).then(function(data) {
       $scope.event = data;
+      $scope.canRate = data.confirmedParticipants.reduce((found, pant) => {
+        return $scope.user.data.user.email === pant.email ? true : found;
+      }, false);
     });
     mappingTools.getUserBidInfo($scope.id)
       .then(function(data) {
