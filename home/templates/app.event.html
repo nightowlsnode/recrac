@@ -140,7 +140,7 @@
                 <p style="margin: 5px 0 0;">
                   <div class="potential-part-div" ng-repeat="participant in event.potentialParticipants" >
                     <img ng-src="{{participant.photo}}"/><br/>
-                    <md-button class="md-icon-button md-accent potential-icons potential-icons-check" ng-click="showData(event._id, participant.user)">
+                    <md-button class="md-icon-button md-accent potential-icons potential-icons-check" ng-click="showData(event._id, participant.email)">
                       <i class="material-icons">&#xE876;</i>
                     </md-button>
                     <md-button class="md-icon-button md-accent potential-icons potential-icons-delete">
