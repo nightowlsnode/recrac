@@ -11,6 +11,18 @@ angular.module('App')
     $scope.messages = [];
     $scope.topBidder = false;
     $scope.maxBid = null;
+    $scope.todaysDate = new Date();
+    $scope.dateCheck = false;
+
+    $scope.checkDate = function() {
+      console.log('todays date ', $scope.todaysDate.getTime());
+      console.log('event date is ', $scope.event.time.getTime())
+      console.log($scope.todaysDate - $scope.event.time);
+      if ($scope.todaysDate - $scope.event.time < 0) {
+        return true;
+      }
+      return false;
+    };
       
     mappingTools.getEvent($scope.id).then(function(data) {
       $scope.event = data;

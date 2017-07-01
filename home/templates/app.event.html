@@ -38,7 +38,7 @@
            <!-- RATING -->
            <rating-directive></rating-directive>
            <p>Rating: {{event.rating | number : 2}}</p>
-           <div layout="column" class="md-inline-form">
+           <div ng-show="checkDate()" layout="column" class="md-inline-form">
               <md-content layout-gt-sm="row" layout-padding>
                 <div style="width: 100%">
                   <form name="eventRating">
