@@ -139,6 +139,10 @@
                 </p>
               </div>
               <!-- View for Bidders -->
+              <div ng-show="topBidder">
+                <span>you hold a top bid!</span>
+                <span>your current max is: ${{maxBid}}</span>
+              </div>
               <div ng-show="event.host.user !== user.data.user.user">
                 <span>top bidders</span>
                 <p style="margin: 5px 0 0;">
@@ -148,7 +152,6 @@
                 </p>
               </div>
             </div>
-            <p click-to-edit=""></p>
           </div>
         </div>
       </section>

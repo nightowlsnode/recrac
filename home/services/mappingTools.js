@@ -54,6 +54,17 @@ angular.module('App')
         });
     }
 
+    function getUserBidInfo(eventID) {
+      return $http.get(`/bid/${eventID}`, {contentType: 'application/json'})
+        .then(function (response) {
+          console.log('Get BID: ', response);  
+          return response.data;
+        })
+        .catch(function (response) {
+          console.error('Get BID Failed', response);
+        });
+    }
+
     function saveEvent(newEvent, id) {
       var req = {
         method: 'PUT',
@@ -202,6 +213,7 @@ angular.module('App')
       toggleLayer: toggleLayer,
       defaultLoc: defaultLoc,
       Layer: Layer,
-      defaultStyle: defaultStyle
+      defaultStyle: defaultStyle,
+      getUserBidInfo: getUserBidInfo
     };
   }]);

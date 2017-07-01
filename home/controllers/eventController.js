@@ -15,6 +15,13 @@ angular.module('App')
     mappingTools.getEvent($scope.id).then(function(data) {
       $scope.event = data;
     });
+    mappingTools.getUserBidInfo($scope.id)
+      .then(function(data) {
+        if (data) {
+          $scope.topBidder = true;
+          $scope.maxBid = data.maxBid;
+        }
+      });
 
     mappingTools.getMessages($scope.id).then(function(data) {
       $scope.messages = data;

@@ -4,7 +4,8 @@ const User = require('../models/user');
 const Event = require('../models/event');
 
 exports.getUserBidInfo = (req, res, next) => {
-  let {eventID, userID} = req.params;
+  let {eventID} = req.params;
+  let userID = req.user.id;
   Event.findOne({_id: eventID}, function(err, event) {
     if (err) {
       res.send({
@@ -13,10 +14,10 @@ exports.getUserBidInfo = (req, res, next) => {
     } else {
       let userBid = event.bids.length
         ? event.bids.reduce((userBid, bid) => {
-          return bid.id === userID ? bid : userBid;
+          return bid.user.id === userID ? bid : userBid;
         }, null)
         : null;
-      userBid ? res.send({maxBid: userBid.max}) : res.send(null);
+      userBid ? res.send({maxBid: userBid.max}) : res.status(404).send('notFound');
     }
   });
 };
