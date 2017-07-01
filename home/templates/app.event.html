@@ -35,15 +35,6 @@
             <p click-to-edit="event.location.address"></p>
             <!-- <p>{{ event.location.address }}</p> -->
 
-            <span>Confirmed Participants</span>
-            <p style="margin: 5px 0 0;">
-
-              <img ng-src="{{event.host.photo}}"/>
-              <img ng-repeat="participant in event.confirmedParticipants" ng-src="{{participant.photo}}"/>
-
-            </p>
-
-            <p style="margin: 0 0 10px 0;font-style: italic;font-size: 0.9em;">{{event.desiredParticipants}} spots remaining!</p>
            <!-- RATING -->
            <rating-directive></rating-directive>
            <p>Rating: {{event.rating | number : 2}}</p>
@@ -64,32 +55,15 @@
                 </div>
               </md-content>
             </div>
-                
-         
-            <!-- Replace above <p style="margin: 0 0 10px 0;font-style: italic;font-size: 0.9em;">{{ event.confirmedParticipants }} out of {{ event.desiredParticipants }} </p> -->
-            <div> <!-- ng-show="event.host.user === user.data.user.user" -->
-              <span>Potential Participants</span>
-              <p style="margin: 5px 0 0;">
-              <div class="potential-part-div" ng-repeat="participant in event.potentialParticipants" >
-                <img ng-src="{{participant.photo}}"/><br/>
-                <md-button class="md-icon-button md-accent potential-icons potential-icons-check" ng-click="showData(event._id, participant.user)">
-                  <i class="material-icons">&#xE876;</i>
-                </md-button>
-                <md-button class="md-icon-button md-accent potential-icons potential-icons-delete">
-                  <i class="material-icons">&#xE92B;</i>
-                </md-button>
-              </div>
-
-              </p>
-            </div>
             <div style="clear: both">
             <span>Time and Date</span>
             <p click-to-edit="event.time | date:'EEEE, MMMM d, h:mm a'"></p>
             <!-- <p>{{ event.time | date:'EEEE, MMMM d, h:mm a'}}</p> -->
 
-            <span>Price</span>
-            $<p click-to-edit="event.price"></p>
+            <span>Min. Price</span><br />
+            $<p style="display: inline-block;" click-to-edit="event.price"></p>
             <!-- <p>{{event.price}} $</p> -->
+            <br />
 
             <span>Type</span>
             <p click-to-edit="event.type"></p>
@@ -123,33 +97,78 @@
       </section>
     </section>
 
-    <!-- COMMENTS -->
+    <section class="section--center mdl-grid mdl-grid--no-spacing event-block-container" style="">
 
-    <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp" style="">
-      <div class="mdl-card mdl-cell mdl-cell--12-col" style="">
-        <div style="padding: 0 20px">
-          <h2 style="font-size: 2em"><b>Comments</b></h2>
-          <div class="mdl-card__supporting-text mdl-grid mdl-grid--no-spacing" ng-repeat="message in messages" style="width: 100%;margin: 0">
+    <!-- BIDS -->
+      <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--4dp event-block-right">
+        <div class="mdl-card mdl-cell mdl-cell--12-col" style="">
+          <div style="padding: 0 20px">
+            <h2 style="font-size: 2em"><b>take a seat</b></h2>
+            <form name="bidAmount" ng-submit="makeBid()">
+              <div layout-gt-lg="row">
+                $<md-input-container class="md-inline" style="margin: 0;">
+                   <input ng-model="bid.text" rows="1" md-select-on-focus style="width:4em"> </input>
+                </md-input-container>
+                <a ng-click="makeBid()" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">Make Bid</a>
+              </div>
+            </form>
+            <div style="margin: 5px 0 10px 0;">
+              <span>minimum bid: ${{event.price}}</span>
+            </div>
+            <span>Confirmed Participants</span>
+            <p style="margin: 5px 0 0;">
+              <img ng-repeat="participant in event.confirmedParticipants" ng-src="{{participant.photo || 'http://donatered-asset.s3.amazonaws.com/assets/default/default_user-884fcb1a70325256218e78500533affb.jpg'}}" style="width: 50px"/>
+            </p>
+            <p style="margin: 0 0 10px 0;font-style: italic;font-size: 0.9em;">{{event.desiredParticipants-event.confirmedParticipants.length | number:0}} spots remaining!</p>
+            <!-- Replace above <p style="margin: 0 0 10px 0;font-style: italic;font-size: 0.9em;">{{ event.confirmedParticipants }} out of {{ event.desiredParticipants }} </p> -->
+            <div> <!-- ng-show="event.host.user === user.data.user.user" -->
+              <span>Potential Participants</span>
+              <p style="margin: 5px 0 0;">
+              <div class="potential-part-div" ng-repeat="participant in event.potentialParticipants" >
+                <img ng-src="{{participant.photo}}"/><br/>
+                <md-button class="md-icon-button md-accent potential-icons potential-icons-check" ng-click="showData(event._id, participant.user)">
+                  <i class="material-icons">&#xE876;</i>
+                </md-button>
+                <md-button class="md-icon-button md-accent potential-icons potential-icons-delete">
+                  <i class="material-icons">&#xE92B;</i>
+                </md-button>
+              </div>
 
-            <comment-directive></comment-directive>
-
+              </p>
+            </div>
+            <p click-to-edit=""></p>
           </div>
         </div>
-        <div layout="column" class="md-inline-form">
-          <md-content layout-gt-sm="row" layout-padding>
-            <div style="width: 100%">
-              <form name="eventComment">
-                <div layout-gt-lg="row">
-                  <md-input-container class="md-block" style="margin-bottom: 0px;">
-                     <textarea ng-model="message.text" md-maxlength="140" rows="2" md-select-on-focus style="width:99%"> </textarea>
-                  </md-input-container>
-                  <a ng-click="saveMessage()" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">Add Comment</a>
-                </div>
-              </form>
+      </section>
+
+      <!-- COMMENTS -->
+
+      <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp event-block-left" style="">
+        <div class="mdl-card mdl-cell mdl-cell--12-col" style="">
+          <div style="padding: 0 20px">
+            <h2 style="font-size: 2em"><b>Comments</b></h2>
+            <div class="mdl-card__supporting-text mdl-grid mdl-grid--no-spacing" ng-repeat="message in messages" style="width: 100%;margin: 0">
+
+              <comment-directive></comment-directive>
+
             </div>
-          </md-content>
+          </div>
+          <div layout="column" class="md-inline-form">
+            <md-content layout-gt-sm="row" layout-padding>
+              <div style="width: 100%">
+                <form name="eventComment">
+                  <div layout-gt-lg="row">
+                    <md-input-container class="md-block" style="margin-bottom: 0px;">
+                       <textarea ng-model="message.text" md-maxlength="140" rows="2" md-select-on-focus style="width:99%"> </textarea>
+                    </md-input-container>
+                    <a ng-click="saveMessage()" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">Add Comment</a>
+                  </div>
+                </form>
+              </div>
+            </md-content>
+          </div>
         </div>
-      </div>
+      </section>
     </section>
   </div>
 </main>

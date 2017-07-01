@@ -11,7 +11,8 @@ var userSchema = new mongoose.Schema({
   hostedEvents: [String],
   joinedEvents: [String],
   rating: Number,
-  description: String
+  description: String,
+  pushSub: Object
 });
 
 
