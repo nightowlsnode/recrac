@@ -107,7 +107,6 @@ app.get('/auth/facebook/callback',
 app.get('/account', function(req, res) {
   if (req.isAuthenticated()) { 
     res.send({user: req.user});
-    push.sendNotification(); 
   } else {
     res.sendStatus(404);
   }
@@ -175,6 +174,8 @@ app.post('/events', function(req, res) {
     desiredParticipants: req.body.desiredParticipants,
     location: {address: req.body.location, lng: 0, lat: 0}
   });
+  push.sendNotification(req.body.name);
+
   newEvent.save(function(err, newEvent) {
     if (err) {
       res.status(500).send(err);
@@ -349,6 +350,7 @@ app.get('/bid/:eventID', biddingController.getUserBidInfo);
 app.post('/subs', (req, res) => {
   User.findById(req.body._id)
     .then(user => {
+      console.log(user);
       user.pushSub = req.body.subscription;
       return user.save();
     })

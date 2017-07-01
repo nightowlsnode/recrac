@@ -1,10 +1,13 @@
 angular.module('App')
   .factory ('pushNotifications', function ($rootScope) {
     const applicationServerKey = 'BDp0w78QW3zcmNKls3-GeSjXSmLQyWHEs7sxTY00LnONZ4u5_WDJOlSxLQdS_rfGo7L2uaynENhibULYm08-upA';
+    var hasPushNotifications = ('serviceWorker' in navigator && 'PushManager' in window);
+    var isSubscribed = false;
     var swRegistration = null;
+    
+    //Helper Functions
 
-    //helper function  to convert key to expected input of subscribe call (From Google Developers on Push Notifications)
-
+    //Convert keys (From Google Developers Entry on Push Notifications)
     const urlB64ToUint8Array = function (base64String) {
       const padding = '='.repeat((4 - base64String.length % 4) % 4);
       const base64 = (base64String + padding)
@@ -20,40 +23,6 @@ angular.module('App')
       return outputArray;
     };
 
-    // // const registerWorker = function () { 
-    // //   if ('serviceWorker' in navigator && 'PushManager' in window) {
-    // //     console.log('Service Worker and Push is supported');
-
-    // //     navigator.serviceWorker.register('sworker.js')
-    // //       .then(function(swReg) {
-    // //         console.log('Service Worker is registered', swReg);
-
-    // //         swRegistration = swReg;
-    // //       })
-    // //       .catch(function(error) {
-    // //         console.error('Service Worker Error', error);
-    // //       });
-    // //   } else {
-    // //     console.warn('Push messaging is not supported');
-    // //     pushButton.textContent = 'Push Not Supported';
-    // //   }
-    // // };
-    // // // const askPermission = function () {
-    // //   return new Promise(function(resolve, reject) {
-    // //     const permissionResult = Notification.requestPermission(function(result) {
-    // //       resolve(result);
-    // //     });
-
-    // //     if (permissionResult) {
-    // //       permissionResult.then(resolve, reject);
-    // //     }
-    // //   })
-    // //     .then(function(permissionResult) {
-    // //       if (permissionResult !== 'granted') {
-    // //         throw new Error('We weren\'t granted permission.');
-    // //       }
-    // //     });
-    // // };
     const subscribeUserToPush = function () {
       const options = {
         userVisibleOnly: true,
@@ -66,6 +35,7 @@ angular.module('App')
           return pushSubscription;
         });
     };
+    
     const postSubscriptionToServer = function (subscription) {
       const data = { _id: $rootScope.userId, subscription};
       console.log(data);
@@ -80,26 +50,23 @@ angular.module('App')
 
     // Check to see if browser has Push and SW Support & register SW
     const setupSubscription = function () {
-      if ('serviceWorker' in navigator && 'PushManager' in window) {
-        console.log('supported');
-        navigator.serviceWorker.register('sworker.js')
-          .then(function(swReg) {
-            console.log('SW is registered', swReg);
-            swRegistration = swReg;
-          })
-          .then(subscribeUserToPush)
-          .then(postSubscriptionToServer)
-          .catch(function(error) {
-            console.error('Service Worker Error', error);
-          });
-      } else {
-        console.warn('Not supported');
-      }
+      navigator.serviceWorker.register('sworker.js')
+        .then(function(swReg) {
+          console.log('SW is registered', swReg);
+          swRegistration = swReg;
+        })
+        .then(subscribeUserToPush)
+        .catch((err) => console.log('failed to subscribe', err))
+        .then(postSubscriptionToServer)
+        .catch(function(error) {
+          console.error('Service Worker Error', error);
+        });
     };
 
   
 
     return {
-      setupSubscription
+      setupSubscription,
+      hasPushNotifications,
     };
   });

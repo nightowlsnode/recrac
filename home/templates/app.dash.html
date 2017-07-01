@@ -22,7 +22,7 @@
               <span>Phone Number</span>
               <p click-to-edit="user.data.user.number"></p>
               <!-- <p>{{user.data.user.number}}</p> -->
-
+              <md-switch ng-if="hasPush" ng-model="isSubscribed" ng-change="subscribeUser()">Subscribe to Event Notifications</md-switch>
             </div>
           </div>
         </section>

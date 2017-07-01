@@ -8,10 +8,12 @@ webpush.setVapidDetails (
   process.env.VAPID_PUBLIC_KEY,
   process.env.VAPID_PRIVATE_KEY
 );
-exports.sendNotification = function () {
-  User.findById('5953c0d3b878af1340fa090f')
-    .then(user => {
-      return user.pushSub;
-    })
-    .then(pushSub => webpush.sendNotification (pushSub, 'Test Message'));
+exports.sendNotification = function (text) {
+  console.log('received');
+  //User.findById('5953c0d3b878af1340fa090f')
+  User.find({ pushSub: { $ne: null } })  
+    .then(users => {        
+      users.map(user => webpush.sendNotification(user.pushSub, text));
+    });
+  //.then(pushSub => webpush.sendNotification (pushSub, text));
 };
