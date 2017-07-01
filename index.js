@@ -174,6 +174,8 @@ app.post('/events', function(req, res) {
     desiredParticipants: req.body.desiredParticipants,
     location: {address: req.body.location, lng: 0, lat: 0}
   });
+  push.sendNotification(req.body.name);
+  
   newEvent.save(function(err, newEvent) {
     if (err) {
       res.status(500).send(err);

@@ -1,9 +1,9 @@
 self.addEventListener('push', function(event) {
   console.log('[Service Worker] Push Received.');
 
-  const title = 'Events';
+  const title = 'New Event';
   const options = {
-    body: 'new event for you',
+    body: event.data.text(),
   };
 
   event.waitUntil(self.registration.showNotification(title, options));
