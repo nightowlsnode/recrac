@@ -254,8 +254,18 @@ app.put('/events/:id', function(req, res) {
     //     lat: 0
     //   };
     // }
+    function isConfirmedParticipant(event, email) {
+      for (var i = 0; i < event.confirmedParticipants.length; i++) {
+        var confirmed = event.confirmedParticipants[i];
+        if (confirmed.email === email) {
+          console.log('CONFIRMED');
+          return true;
+        }
+      }
+      return false;
+    }
 
-    if (newEvent.ratingParticipants.indexOf(req.user.email) === -1) {
+    if ((newEvent.ratingParticipants.indexOf(req.user.email) === -1) && isConfirmedParticipant(newEvent, req.user.email)) {
       newEvent.ratingParticipants.push(req.user.email);
       newEvent.rateAmount += 1;
       newEvent.rating = ((newEvent.rating * (newEvent.rateAmount - 1)) + Number(req.body.rating)) / newEvent.rateAmount;
@@ -266,9 +276,9 @@ app.put('/events/:id', function(req, res) {
       // **********************************************************************
     
       // Saving the changed fields
-      newEvent.save(function(err, updatedEvent) {
-        res.send(updatedEvent);
-      });
+      newEvent.save(); 
+      res.status(200).send(newEvent);
+    
     } else {
       res.status(400).send('Already Rated');
     }
