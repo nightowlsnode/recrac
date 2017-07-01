@@ -1,6 +1,7 @@
 angular.module('App')
   .controller('CreateModal', function($scope, $mdDialog, $interval, $mdToast, userService, socket) {
     socket.on('addAlert', (alert)=>{ showSimpleToast(alert); });
+    socket.on('outbidAlert', (alert)=>{ showSimpleToastOutbid(alert); });
     
     var last = {
       bottom: false,
@@ -36,6 +37,16 @@ angular.module('App')
       $mdToast.show(
         $mdToast.simple()
           .textContent(`${alert.user} left a message on ${alert.eventName} event`)
+          .position(pinTo )
+          .hideDelay(3000)
+      );
+    };
+    const showSimpleToastOutbid = function(alert) {
+      var pinTo = $scope.getToastPosition();
+
+      $mdToast.show(
+        $mdToast.simple()
+          .textContent(`${alert.user} you have been outbid for ${alert.eventName}`)
           .position(pinTo )
           .hideDelay(3000)
       );

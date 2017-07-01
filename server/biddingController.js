@@ -13,17 +13,20 @@ exports.getUserBidInfo = (req, res, next) => {
         error: err
       });
     } else {
-      let userBid = event.bids.length
-        ? event.bids.reduce((userBid, bid) => {
-          return bid.user.id === userID ? bid : userBid;
-        }, null)
-        : null;
-      userBid ? res.send({maxBid: userBid.max}) : res.status(404).send('notFound');
+      let userBid = null;
+      for (var i = 0; i < event.desiredParticipants; i++) {
+        let bid = event.bids[i];
+        userBid = bid.user.id === userID ? bid.max : userBid;
+        break;
+      }
+      userBid !== null ? res.send({maxBid: userBid}) : res.status(404).send('notFound');
     }
   });
 };
 
 exports.makeBid = (req, res, next) => {
+  let uhoh = socketUsers.slice();
+  let five = 5;
   if (!req.user) { res.status(401).send('Please Login'); }
   let newBid = { curr: 0, max: req.body.bid, user: req.user.id };
   Event.findOne({_id: req.body.event}, function(err, event) {
@@ -41,7 +44,7 @@ exports.makeBid = (req, res, next) => {
         } else {
           var bidderObj = {id: bidder.id, user: bidder.user, photo: bidder.picture, email: bidder.email, curr: null};
           newBid.user = bidderObj;
-          event.bids = sortBids(event.bids, newBid, eventSize);
+          event.bids = sortBids(event.bids, newBid, eventSize, event);
           event.potentialParticipants = event.bids.slice(0, eventSize)
             .map((bid) => bid.user);
           event.save();
@@ -57,7 +60,7 @@ exports.makeBid = (req, res, next) => {
 };
 
 
-const sortBids = (bids, newBid, eventSize) => {
+const sortBids = (bids, newBid, eventSize, event) => {
   if (!bids.length) {
     return [newBid];
   }
@@ -73,7 +76,7 @@ const sortBids = (bids, newBid, eventSize) => {
   if (bids.length < eventSize) {
     bids.push(newBid);
   } else if (newBid.max > bids[eventSize - 1].max) {
-    var {winningBid, ordered} = escalateBid(bids[eventSize - 1], newBid);
+    var {winningBid, ordered} = escalateBid(bids[eventSize - 1], newBid, event);
     bids.splice(eventSize - 1, 2, ordered[0], ordered[1]);
     for (let i = eventSize - 1; i >= 0; i--) {
       bids[i].curr = winningBid;
@@ -86,24 +89,27 @@ const sortBids = (bids, newBid, eventSize) => {
   bids = bids.concat(sortTopBids(winners));
   return bids;
 };
-const escalateBid = (curr, newBid) => {
+const escalateBid = (curr, newBid, event) => {
   let winningBid = 0;
   let ordered = [];
   let newBidWins = curr.max < newBid.max;
 
-  if (newBidWins) {
+  if (!newBidWins) {
     winningBid = curr.max + 1;
     ordered = [newBid, curr];
   } else {
     winningBid = newBid.max + 1;
     ordered = [curr, newBid];
   }
-  // if (ordered[1].max === curr.max) {
-    // if curr user has session
-      // send notification via ws
-    // else
-      // send text
-  // }
+  if (ordered[0].max === curr.max) {
+    for (var i = 0; i < socketUsers.length; i++) {
+      let user = socketUsers[i];
+      if (user.email === curr.user.email) {
+        ws.to(user.socketId).emit('outbidAlert', {user: user.user, eventName: event.name});
+        break;
+      }
+    }
+  }
   return {winningBid, ordered};
 };
 const sortTopBids = (bids) => {
