@@ -13,6 +13,7 @@ angular.module('App')
     $scope.maxBid = null;
     $scope.todaysDate = new Date();
     $scope.dateCheck = false;
+    $scope.canRate = false;
 
     $scope.checkDate = function() {
       // console.log('todays date ', $scope.todaysDate.getTime());
@@ -26,6 +27,14 @@ angular.module('App')
       
     mappingTools.getEvent($scope.id).then(function(data) {
       $scope.event = data;
+      $scope.canRate = data.confirmedParticipants.reduce((found, pant) => {
+        return $scope.user.data.user.email === pant.email ? true : found;
+      }, false);
+      $scope.canRate = $scope.canRate
+        ? data.ratingParticipants.reduce((canRate, email) => {
+          return $scope.user.data.user.email === email ? false : canRate;
+        }, true)
+        : $scope.canRate;
     });
     mappingTools.getUserBidInfo($scope.id)
       .then(function(data) {
@@ -92,6 +101,7 @@ angular.module('App')
           console.log('Rating Successful: ', response);
           $scope.event = response.data;
           if (response.status === 200) {
+            $scope.canRate = false;
             alert('Thanks for rating this event!');
           } else if (response.status === 400) {
             alert('You already rated this event');
@@ -105,9 +115,9 @@ angular.module('App')
         });
     };
 
-    $scope.showData = function(eventId, participantName ) {
-      console.log('dnwbuiy');
-      $http.put('/confirmParticipant', {eventId: eventId, participantName: participantName}, {contentType: 'application/json'})
+    $scope.showData = function(eventId, participantEmail ) {
+      console.log(participantEmail);
+      $http.put('/confirmParticipant', {eventId: eventId, participantEmail: participantEmail}, {contentType: 'application/json'})
         .then(function (response) {
           console.log('Put Successful: ', response);
         })

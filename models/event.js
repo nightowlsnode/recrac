@@ -14,7 +14,7 @@ var eventSchema = new mongoose.Schema({
   price: Number,
   currentPrice: Number,
   bids: [{max: Number, curr: Number, user: {id: String, photo: String, email: String, curr: Number}}],
-  rating: Number,
+  rating: {type: Number, default: null},
   rateAmount: {type: Number, default: 0},
   ratingParticipants: Array,
   confirmedParticipants: [{user: String, photo: String, email: String}],

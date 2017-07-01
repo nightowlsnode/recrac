@@ -2,6 +2,7 @@ const app = require('../index.js');
 const Message = require('../models/message');
 const User = require('../models/user');
 const Event = require('../models/event');
+const {socketUsers, socket, ws} = require('./socket.js');
 
 exports.getUserBidInfo = (req, res, next) => {
   let {eventID} = req.params;
@@ -97,6 +98,12 @@ const escalateBid = (curr, newBid) => {
     winningBid = newBid.max + 1;
     ordered = [curr, newBid];
   }
+  // if (ordered[1].max === curr.max) {
+    // if curr user has session
+      // send notification via ws
+    // else
+      // send text
+  // }
   return {winningBid, ordered};
 };
 const sortTopBids = (bids) => {
