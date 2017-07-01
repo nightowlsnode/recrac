@@ -1,6 +1,6 @@
 angular.module('App')
-  .controller('HomeController', ['$scope', '$rootScope', '$state', 'userService', 'searchServices', 'mappingTools', 'Data', 'socket', 'pushNotifications',
-    function ($scope, $rootScope, $state, userService, searchServices, mappingTools, Data, socket, pushNotifications) {
+  .controller('HomeController', ['$scope', '$rootScope', '$state', 'userService', 'searchServices', 'mappingTools', 'Data', 'socket', 
+    function ($scope, $rootScope, $state, userService, searchServices, mappingTools, Data, socket) {
       var markers = {};
 
       userService //authentication
@@ -9,13 +9,11 @@ angular.module('App')
           $scope.user = user;
           $rootScope.userId = user.data.user._id;
           socket.emit('getUserInfo', $scope.user );
-          pushNotifications.setupSubscription(user.id);
         });
       $scope.layers = mappingTools.Layer; //map set up tiles from mapbox
       $scope.defaults = { scrollWheelZoom: false
       }; //map set up turn off scroll wheel zoom.
       $scope.currentLoc = mappingTools.defaultLoc; //map set up deault location.
-      // pushNotifications.subscribeUserToPush();
       mappingTools //get current loc from browser
         .getCurrentPosition().then((position) => {
           $scope.currentLoc = {
