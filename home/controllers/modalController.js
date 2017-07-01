@@ -64,11 +64,12 @@ angular.module('App')
         userService
           .authenticate()
           .then(function (user) { $scope.user = user; });
-
+          
         $scope.topBidder = false;
         $scope.maxBid = null;
         $scope.event = ev;
-        mappingTools.getUserBidInfo($scope.event._id)
+        $scope.id = $scope.event._id;
+        mappingTools.getUserBidInfo($scope.id)
           .then(function(data) {
             if (data) {
               $scope.topBidder = true;
