@@ -63,8 +63,7 @@ angular.module('App')
       return function BidController($scope, $http, $mdDialog, mappingTools) {
         userService
           .authenticate()
-          .then(function (user) { $scope.user = user; });
-          
+          .then(function (user) { $scope.user = user; });          
         $scope.topBidder = false;
         $scope.maxBid = null;
         $scope.event = ev;
