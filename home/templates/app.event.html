@@ -115,26 +115,38 @@
             <div style="margin: 5px 0 10px 0;">
               <span>minimum bid: ${{event.price}}</span>
             </div>
-            <span>Confirmed Participants</span>
-            <p style="margin: 5px 0 0;">
-              <img ng-repeat="participant in event.confirmedParticipants" ng-src="{{participant.photo || 'http://donatered-asset.s3.amazonaws.com/assets/default/default_user-884fcb1a70325256218e78500533affb.jpg'}}" style="width: 50px"/>
-            </p>
-            <p style="margin: 0 0 10px 0;font-style: italic;font-size: 0.9em;">{{event.desiredParticipants-event.confirmedParticipants.length | number:0}} spots remaining!</p>
-            <!-- Replace above <p style="margin: 0 0 10px 0;font-style: italic;font-size: 0.9em;">{{ event.confirmedParticipants }} out of {{ event.desiredParticipants }} </p> -->
-            <div> <!-- ng-show="event.host.user === user.data.user.user" -->
-              <span>Potential Participants</span>
+            <div ng-show="event.host.user === user.data.user.user">
+              <span>Confirmed Participants</span>
               <p style="margin: 5px 0 0;">
-              <div class="potential-part-div" ng-repeat="participant in event.potentialParticipants" >
-                <img ng-src="{{participant.photo}}"/><br/>
-                <md-button class="md-icon-button md-accent potential-icons potential-icons-check" ng-click="showData(event._id, participant.user)">
-                  <i class="material-icons">&#xE876;</i>
-                </md-button>
-                <md-button class="md-icon-button md-accent potential-icons potential-icons-delete">
-                  <i class="material-icons">&#xE92B;</i>
-                </md-button>
-              </div>
-
+                <img ng-repeat="participant in event.confirmedParticipants" ng-src="{{participant.photo || 'http://donatered-asset.s3.amazonaws.com/assets/default/default_user-884fcb1a70325256218e78500533affb.jpg'}}" style="width: 50px"/>
               </p>
+            </div>
+            <p style="margin: 0 0 10px 0;font-style: italic;font-size: 0.9em;">{{event.desiredParticipants-event.confirmedParticipants.length | number:0}} spots remaining!</p>
+            <div> <!-- ng-show="event.host.user === user.data.user.user" -->
+              <!-- VIEW FOR HOST CONTROL -->
+              <div ng-show="event.host.user === user.data.user.user">
+                <span>Potential Participants</span>
+                <p style="margin: 5px 0 0;">
+                  <div class="potential-part-div" ng-repeat="participant in event.potentialParticipants" >
+                    <img ng-src="{{participant.photo}}"/><br/>
+                    <md-button class="md-icon-button md-accent potential-icons potential-icons-check" ng-click="showData(event._id, participant.user)">
+                      <i class="material-icons">&#xE876;</i>
+                    </md-button>
+                    <md-button class="md-icon-button md-accent potential-icons potential-icons-delete">
+                      <i class="material-icons">&#xE92B;</i>
+                    </md-button>
+                  </div>
+                </p>
+              </div>
+              <!-- View for Bidders -->
+              <div ng-show="event.host.user !== user.data.user.user">
+                <span>top bidders</span>
+                <p style="margin: 5px 0 0;">
+                  <div class="potential-part-div" ng-repeat="participant in event.potentialParticipants" >
+                    <img ng-src="{{participant.photo}}"/><br/>
+                  </div>
+                </p>
+              </div>
             </div>
             <p click-to-edit=""></p>
           </div>

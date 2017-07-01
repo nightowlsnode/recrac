@@ -345,6 +345,7 @@ app.put('/user/:id', function(req, res) { //email: email, number:number, descrip
 });
 
 app.post('/bid', biddingController.makeBid);
+app.get('/bid/:eventID/:userID', biddingController.getUserBidInfo);
 
 app.post('/subs', (req, res) => {
   User.findById(req.body._id)

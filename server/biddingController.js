@@ -3,6 +3,24 @@ const Message = require('../models/message');
 const User = require('../models/user');
 const Event = require('../models/event');
 
+exports.getUserBidInfo = (req, res, next) => {
+  let {eventID, userID} = req.params;
+  Event.findOne({_id: eventID}, function(err, event) {
+    if (err) {
+      res.send({
+        error: err
+      });
+    } else {
+      let userBid = event.bids.length
+        ? event.bids.reduce((userBid, bid) => {
+          return bid.id === userID ? bid : userBid;
+        }, null)
+        : null;
+      userBid ? res.send({maxBid: userBid.max}) : res.send(null);
+    }
+  });
+};
+
 exports.makeBid = (req, res, next) => {
   if (!req.user) { res.status(401).send('Please Login'); }
   let newBid = { curr: 0, max: req.body.bid, user: req.user.id };

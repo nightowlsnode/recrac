@@ -9,6 +9,8 @@ angular.module('App')
     //$scope.event = $state.params.event
     $scope.event = {};
     $scope.messages = [];
+    $scope.topBidder = false;
+    $scope.maxBid = null;
       
     mappingTools.getEvent($scope.id).then(function(data) {
       $scope.event = data;
