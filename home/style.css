@@ -31,7 +31,12 @@ h2 {
   z-index: 2;
   width: 100%;
 }
-
+.topBidder {
+  background: rgba(255, 97, 151, 0.72);
+  margin: -16px 0px 16px;
+  border-radius: 10px;
+  text-align: center;
+}
 .search-box {
   margin-top: 56px;
   width: 100%;
