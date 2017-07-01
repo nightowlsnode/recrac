@@ -57,8 +57,10 @@ angular.module('App')
     function getUserBidInfo(eventID) {
       return $http.get(`/bid/${eventID}`, {contentType: 'application/json'})
         .then(function (response) {
-          console.log('Get BID: ', response);  
-          return response.data;
+          console.log('Get BID: ', response); 
+          if (!response.data.error) {
+            return response.data;            
+          }
         })
         .catch(function (response) {
           console.error('Get BID Failed', response);

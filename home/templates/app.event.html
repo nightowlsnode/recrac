@@ -111,7 +111,8 @@
                 <h4 style="margin: 5px 0 1px 0;">you hold a top bid!</h4>
                 <span>your current max is: ${{maxBid}}</span>
               </div>
-              <div style="padding: 10px 0;" ng-show="!topBidder">
+              <!-- not topBidder && not the host -->
+              <div style="padding: 10px 0;" ng-show="!topBidder && event.host.user !== user.data.user.user">
                 <span>enter a bid below to join the event</span>
               </div>
             </div>
