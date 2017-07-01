@@ -235,7 +235,7 @@ app.put('/events/:id', function(req, res) {
   // Geting the event to update
   console.log('request is ', req.user.email);
   Event.findOne({_id: req.param('id')}, function(err, newEvent) {
-    // Updating all the information from the event
+    // Updating all the information f rom the event
     // **********************************************************************
     // if (req.body.name) {
     //   newEvent.name = req.body.name;   
@@ -269,6 +269,7 @@ app.put('/events/:id', function(req, res) {
     //     lat: 0
     //   };
     // }
+    
     function isConfirmedParticipant(event, email) {
       for (var i = 0; i < event.confirmedParticipants.length; i++) {
         var confirmed = event.confirmedParticipants[i];
