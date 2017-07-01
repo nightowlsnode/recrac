@@ -134,10 +134,12 @@ app.get('/timer/:id', function(req, res) {
 //Get and post methods for messages on event page
 
 app.post('/message', function(req, res) {
+  console.log(req.body);
   var newMessage = new Message ({
     user: req.user.user,
     event: req.body.event,
-    text: req.body.text
+    text: req.body.text,
+    picture: req.body.picture
   });
   newMessage.save(function(err, newMessage) {
     if (err) {
@@ -150,7 +152,7 @@ app.post('/message', function(req, res) {
 
 app.post('/rating', function (req, res) {
 
-})
+});
 
 app.get('/message/:eventId', function(req, res) {
   Message.find({event: req.param('eventId')}, function(err, newMessages) {
@@ -344,6 +346,7 @@ app.put('/user/:id', function(req, res) { //email: email, number:number, descrip
 });
 
 app.post('/bid', biddingController.makeBid);
+app.get('/bid/:eventID', biddingController.getUserBidInfo);
 
 app.post('/subs', (req, res) => {
   User.findById(req.body._id)
