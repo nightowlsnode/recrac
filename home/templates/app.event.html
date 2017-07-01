@@ -103,8 +103,19 @@
       <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--4dp event-block-right">
         <div class="mdl-card mdl-cell mdl-cell--12-col" style="">
           <div style="padding: 0 20px">
-            <h2 style="font-size: 2em"><b>take a seat</b></h2>
-            <form name="bidAmount" ng-submit="makeBid()">
+            <h2 style="font-size: 2em"><b>take a seat...</b></h2>
+            <p style="margin-top: -37px;font-style: italic;font-size: 0.9em;">only {{event.desiredParticipants-event.potentialParticipants.length | number:0}} remaining!</p>
+            <!-- PINK BID TOGGLE -->
+            <div class="topBidder">
+              <div ng-show="topBidder">
+                <h4 style="margin: 5px 0 1px 0;">you hold a top bid!</h4>
+                <span>your current max is: ${{maxBid}}</span>
+              </div>
+              <div style="padding: 10px 0;" ng-show="!topBidder">
+                <span>enter a bid below to join the event</span>
+              </div>
+            </div>
+            <form ng-show="event.host.user !== user.data.user.user" name="bidAmount" ng-submit="makeBid()">
               <div layout-gt-lg="row">
                 $<md-input-container class="md-inline" style="margin: 0;">
                    <input ng-model="bid.text" rows="1" md-select-on-focus style="width:4em"> </input>
@@ -121,7 +132,6 @@
                 <img ng-repeat="participant in event.confirmedParticipants" ng-src="{{participant.photo || 'http://donatered-asset.s3.amazonaws.com/assets/default/default_user-884fcb1a70325256218e78500533affb.jpg'}}" style="width: 50px"/>
               </p>
             </div>
-            <p style="margin: 0 0 10px 0;font-style: italic;font-size: 0.9em;">{{event.desiredParticipants-event.confirmedParticipants.length | number:0}} spots remaining!</p>
             <div> <!-- ng-show="event.host.user === user.data.user.user" -->
               <!-- VIEW FOR HOST CONTROL -->
               <div ng-show="event.host.user === user.data.user.user">
@@ -139,10 +149,6 @@
                 </p>
               </div>
               <!-- View for Bidders -->
-              <div ng-show="topBidder">
-                <span>you hold a top bid!</span>
-                <span>your current max is: ${{maxBid}}</span>
-              </div>
               <div ng-show="event.host.user !== user.data.user.user">
                 <span>top bidders</span>
                 <p style="margin: 5px 0 0;">

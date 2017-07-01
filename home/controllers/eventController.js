@@ -61,6 +61,13 @@ angular.module('App')
           $scope.event = response.data;
           console.log('Post Successful: ', response); 
           $scope.bid.text = ''; 
+          mappingTools.getUserBidInfo($scope.id)
+            .then(function(data) {
+              if (data) {
+                $scope.topBidder = true;
+                $scope.maxBid = data.maxBid;
+              }
+            });
         })
         .catch(function (err) {
           console.error('Post Failed: ', err);
