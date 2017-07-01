@@ -1,22 +1,11 @@
-// Placeholder using Google Developer template 
-
-
-
-'use strict';
-
 self.addEventListener('push', function(event) {
   console.log('[Service Worker] Push Received.');
-  console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
 
+  const title = 'Events';
+  const options = {
+    body: 'new event for you',
+  };
 
-
-  var title = 'hi';  
-  var body = 'hi';  
-
- 
-  self.registration.showNotification(title, {  
-    body: body,  
-  });  
+  event.waitUntil(self.registration.showNotification(title, options));
 });
-
 

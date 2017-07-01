@@ -9,7 +9,8 @@ webpush.setVapidDetails (
   process.env.VAPID_PRIVATE_KEY
 );
 exports.sendNotification = function () {
-  User.findById('5953c0d3b878af1340fa090f')
+  console.log('received')
+  User.findById('5953c0d3b878af1340fa090f')  
     .then(user => {
       return user.pushSub;
     })

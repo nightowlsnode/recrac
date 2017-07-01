@@ -107,7 +107,6 @@ app.get('/auth/facebook/callback',
 app.get('/account', function(req, res) {
   if (req.isAuthenticated()) { 
     res.send({user: req.user});
-    push.sendNotification(); 
   } else {
     res.sendStatus(404);
   }
@@ -349,6 +348,7 @@ app.get('/bid/:eventID', biddingController.getUserBidInfo);
 app.post('/subs', (req, res) => {
   User.findById(req.body._id)
     .then(user => {
+      console.log(user);
       user.pushSub = req.body.subscription;
       return user.save();
     })
@@ -361,6 +361,20 @@ app.post('/subs', (req, res) => {
       res.status(500).send(err);
     });
 });
+<<<<<<< HEAD
+=======
+
+
+
+//Server init to listen on port 3000 -> Needs to be altered for deployment
+
+server.listen(process.env.PORT);
+console.log(`RECRAC server running on :${process.env.PORT}`);
+//here is a change.
+
+var users = [];
+
+>>>>>>> Added push notification subscription toggle to frontend dashboard
 ws.on('connection', function(socket) {
   socket.on('getUserInfo', (info) => {
     info.data.user.socketId = socket.id;
