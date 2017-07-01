@@ -16,6 +16,7 @@ angular.module('App')
 
     mappingTools.getMessages($scope.id).then(function(data) {
       $scope.messages = data;
+      console.log(data);
     });
       
     $scope.save = function() {
@@ -26,12 +27,17 @@ angular.module('App')
       
 
     $scope.saveMessage = function() {
-      $http.post('/message', {event: $scope.id, user: '', text: $scope.message.text}, {contentType: 'application/json'})
+      console.log($scope.user.data.user.picture);
+      $http.post('/message', {event: $scope.id, user: '', text: $scope.message.text, picture: $scope.user.data.user.picture}, {contentType: 'application/json'})
         .then(function (response) {
           console.log('Post Successful: ', response);  
         })
         .then(() =>{
-          socket.emit('postComment', {id: $scope.id, user: $scope.user.data.user, eventName: $scope.event.name });
+          socket.emit('postComment', {
+            id: $scope.id,
+            user: $scope.user.data.user,
+            eventName: $scope.event.name
+          });
         })
         .catch(function (err) {
           console.error('Post Failed: ', err);
