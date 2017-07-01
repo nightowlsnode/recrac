@@ -1,10 +1,15 @@
-var data = require('./data.json');
-var Event = require('./models/event');
+const env = require('node-env-file');
+env(__dirname + '/.env');
+
+const data = require('./data.json');
+const Event = require('./models/event');
 const db = require('./db');
 
-var insertData = function() {
+
+
+const insertData = function() {
   data.forEach((item) => {
-    var newEvent = new Event({
+    const newEvent = new Event({
       name: item.name,
       description: item.description,
       host: item.host,
@@ -14,7 +19,10 @@ var insertData = function() {
       time: item.time,
       price: item.price,
       confirmedParticipants: item.confirmedParticipants,
-      potentialParticipants: item.potentialParticipants
+      potentialParticipants: item.potentialParticipants,
+      rating: item.rating,
+      rateAmount: item.rateAmount,
+      ratingParticipants: item.ratingParticipants
     });
     newEvent.save(function (err, newEvent) {
       if (err) {

@@ -1,57 +1,52 @@
-//Bare bones server intialization.
-const passport = require('passport');
-const FacebookStrategy = require('passport-facebook').Strategy;
-const port = process.env.PORT || 3000;
-const express = require('express');
-const path = require('path');
-const bodyParser = require('body-parser');
-const config = require('./config/config.js');
-//cookie monster's code repos!
-var flash = require('connect-flash');
-var cookieParser = require('cookie-parser');
-var session = require('express-session');
-//Require if modular code is put in helper:
-//var helper = require('./helpers/helper');
-
-
-const app = express();
-
+// build env for dev env
+require('node-env-file')(__dirname + '/.env');
+// DB stuff
 const db = require('./db');
+const Message = require('./models/message');
+const User = require('./models/user');
+const Event = require('./models/event');
+// Server Stuff
+const path = require('path');
+const flash = require('connect-flash');
+const morgan = require('morgan');
+const express = require('express');
+const session = require('express-session');
+const passport = require('passport');
+const bodyParser = require('body-parser');
+const biddingController = require('./server/biddingController.js');
+const FacebookStrategy = require('passport-facebook').Strategy;
+const httpServer = require('http').Server;
+const socket = require('socket.io');
+const push = require('./push.js');
+const app = express();
+const server = httpServer(app);
+const ws = socket(server);
 
-//enabling various cookie /session /flash functionality! <('.')>
-app.use(cookieParser());
+
+// UNDER(middle)WEAR
+app.use(morgan(':method :url :status :response-time ms - :res[content-length]', {
+  skip: function (req, res) { return res.statusCode === 304; },
+}));
 app.use(session({secret: 'recursive raccoon', resave: true, saveUninitialized: false}));
-
-
 //passport authentication
 app.use(passport.initialize());
 app.use(passport.session());
-
 app.use(flash());
 
-//Require all created models:
-var Message = require('./models/message');
-var User = require('./models/user');
-var Event = require('./models/event');
-
-// Middleware to parse body:
 app.use(bodyParser.json());
-
-//Paths to look for files to import (can have many):
 app.use(express.static(path.resolve(__dirname, './node_modules')));
-
 app.use(express.static(path.resolve(__dirname, './home')));
 
 //Passport facebook strategy config:
-
 passport.use(new FacebookStrategy({
-  clientID: config.FACEBOOK_APP_ID, 
-  clientSecret: config.FACEBOOK_APP_SECRET, 
-  callbackURL: 'https://recrac.herokuapp.com/auth/facebook/callback',
+
+  clientID: process.env.FACEBOOK_APP_ID, 
+  clientSecret: process.env.FACEBOOK_APP_SECRET, 
+  callbackURL: process.env.FACEBOOK_CB_URL,
+
   profileFields: ['id', 'displayName', 'photos', 'emails']
 },
 function(accessToken, refreshToken, profile, done) {
-  console.log('this is the facebook returned profile', profile);
   User.findOne({
     'facebook.id': profile.id
   }, function(err, user) {
@@ -90,7 +85,6 @@ function(accessToken, refreshToken, profile, done) {
 // example does not have a database, the complete Facebook profile is serialized
 // and deserialized.
 passport.serializeUser(function(user, done) {
-  console.log('serialize user: ', user.user);
   done(null, user.facebook.id);
 });
 
@@ -114,7 +108,8 @@ app.get('/auth/facebook/callback',
 
 app.get('/account', function(req, res) {
   if (req.isAuthenticated()) { 
-    res.send({user: req.user}); 
+    res.send({user: req.user});
+    push.sendNotification(); 
   } else {
     res.sendStatus(404);
   }
@@ -139,10 +134,12 @@ app.get('/timer/:id', function(req, res) {
 //Get and post methods for messages on event page
 
 app.post('/message', function(req, res) {
+  console.log(req.body);
   var newMessage = new Message ({
     user: req.user.user,
     event: req.body.event,
-    text: req.body.text
+    text: req.body.text,
+    picture: req.body.picture
   });
   newMessage.save(function(err, newMessage) {
     if (err) {
@@ -151,6 +148,10 @@ app.post('/message', function(req, res) {
       res.status(200).send(newMessage);
     }
   });
+});
+
+app.post('/rating', function (req, res) {
+
 });
 
 app.get('/message/:eventId', function(req, res) {
@@ -180,7 +181,14 @@ app.post('/events', function(req, res) {
     if (err) {
       res.status(500).send(err);
     } else {
+      newEvent.bids = null;
       res.status(200).send(newEvent);
+      User.findById(req.user._id)
+        .then ((user) => {
+          user.hostedEvents.push(newEvent._id);
+          return user.save()
+            .catch((err) => console.log(err));
+        });
     }
   });
 });
@@ -188,11 +196,9 @@ app.post('/events', function(req, res) {
 
 app.put('/confirmParticipant', function(req, res) {
   User.findOne({user: req.body.participantName}, function(err, joiner) {
-    console.log('A');
     if (err) {
       res.status(500).send(err);
     } else {
-      console.log('A');
       var joinerObj = {$push: {confirmedParticipants: {user: joiner.user, photo: joiner.picture, email: joiner.email}},
         $pull: {potentialParticipants: {user: joiner.user}}};
       console.log(req.body);
@@ -200,6 +206,7 @@ app.put('/confirmParticipant', function(req, res) {
         if (err) {
           res.status(500).send(err);
         } else {
+          updatedEvent.bids = null;
           res.status(200).send(updatedEvent);
         }
       });
@@ -218,6 +225,7 @@ app.put('/events', function(req, res) {
         if (err) {
           res.status(500).send(err);
         } else {
+          updatedEvent.bids = null;
           res.status(200).send(updatedEvent);
         }
       });
@@ -227,47 +235,70 @@ app.put('/events', function(req, res) {
 
 app.put('/events/:id', function(req, res) {
   // Geting the event to update
+  console.log('request is ', req.user.email);
   Event.findOne({_id: req.param('id')}, function(err, newEvent) {
     // Updating all the information from the event
     // **********************************************************************
-    if (req.body.name) {
-      newEvent.name = req.body.name;   
-    }
-    if (req.body.description) {
-      newEvent.description = req.body.description;
-    }
+    // if (req.body.name) {
+    //   newEvent.name = req.body.name;   
+    // }
+    // if (req.body.description) {
+    //   newEvent.description = req.body.description;
+    // }
     
-    if (req.user) {
-      newEvent.host = req.user.user;
-    }
+    // if (req.user) {
+    //   newEvent.host = req.user.user;
+    // }
     
-    if (req.body.type) {
-      newEvent.type = req.body.type;
-    }
+    // if (req.body.type) {
+    //   newEvent.type = req.body.type;
+    // }
     
-    if (req.body.time) {
-      newEvent.time = req.body.time;
-    }
-    if (req.body.price) {
-      newEvent.price = req.body.price || 0;
-    }
-    if (req.body.desiredParticipants) {
-      newEvent.desiredParticipants = req.body.desiredParticipants;
-    }
+    // if (req.body.time) {
+    //   newEvent.time = req.body.time;
+    // }
+    // if (req.body.price) {
+    //   newEvent.price = req.body.price || 0;
+    // }
+    // if (req.body.desiredParticipants) {
+    //   newEvent.desiredParticipants = req.body.desiredParticipants;
+    // }
     
-    if (req.body.location) {
-      newEvent.location = {
-        address: req.body.location,
-        lng: 0, 
-        lat: 0
-      };
+    // if (req.body.location) {
+    //   newEvent.location = {
+    //     address: req.body.location,
+    //     lng: 0, 
+    //     lat: 0
+    //   };
+    // }
+    function isConfirmedParticipant(event, email) {
+      for (var i = 0; i < event.confirmedParticipants.length; i++) {
+        var confirmed = event.confirmedParticipants[i];
+        if (confirmed.email === email) {
+          console.log('CONFIRMED');
+          return true;
+        }
+      }
+      return false;
     }
-    // **********************************************************************
+
+    if ((newEvent.ratingParticipants.indexOf(req.user.email) === -1) && isConfirmedParticipant(newEvent, req.user.email)) {
+      newEvent.ratingParticipants.push(req.user.email);
+      newEvent.rateAmount += 1;
+      newEvent.rating = ((newEvent.rating * (newEvent.rateAmount - 1)) + Number(req.body.rating)) / newEvent.rateAmount;
     
-    // Saving the changed fields
-    newEvent.save(function(err, updatedEvent) {
-      res.send(updatedEvent);
-    });
+      
+      
+    
+      // **********************************************************************
+    
+      // Saving the changed fields
+      newEvent.save(); 
+      res.status(200).send(newEvent);
+    
+    } else {
+      res.status(400).send('Already Rated');
+    }
   });
 });
 
@@ -276,6 +307,7 @@ app.get('/events', function(req, res) {
     if (err) {
       res.status(500).send(err);
     } else {
+      events.forEach((event) => event.bids = null);
       res.status(200).send(events);
     }
   });
@@ -287,7 +319,8 @@ app.get('/events/:id', function(req, res) {
       res.send({
         error: err
       });
-    } else {
+    } else { 
+      newEvent.bids = null;
       res.send(newEvent);
     }
   });
@@ -296,7 +329,6 @@ app.get('/events/:id', function(req, res) {
 app.put('/user/:id', function(req, res) { //email: email, number:number, description: description
   // Geting the event to update
   User.findOne({'facebook.id': req.param('id')}, function(err, newUser) {
-    console.log('newUser on line 278 is ', newUser);
     // Updating all the information from the event
     // **********************************************************************
     newUser.email = req.body.email;
@@ -312,8 +344,43 @@ app.put('/user/:id', function(req, res) { //email: email, number:number, descrip
   });
 });
 
+app.post('/bid', biddingController.makeBid);
+app.get('/bid/:eventID', biddingController.getUserBidInfo);
+
+app.post('/subs', (req, res) => {
+  User.findById(req.body._id)
+    .then(user => {
+      user.pushSub = req.body.subscription;
+      return user.save();
+    })
+    .then((updatedUser) => {
+      console.log(updatedUser);
+      res.status(200).send();
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send(err);
+    });
+});
+var users = [];
+ws.on('connection', function(socket) {
+  socket.on('getUserInfo', (info) => {
+    info.data.user.socketId = socket.id;
+    users.push(info.data.user);
+  });
+
+  socket.on('postComment', (comment) => {
+    const {id } = comment;
+    users.forEach((user) => {
+      if (user.hostedEvents.includes (id)) {
+        ws.to(user.socketId).emit('addAlert', {user: comment.user.user, eventName: comment.eventName, comment });
+      }  
+    });
+  });
+});
 
 //Server init to listen on port 3000 -> Needs to be altered for deployment
-app.listen(port);
-console.log('Greenfield server running on :3000');
-//here is a change.
+server.listen(process.env.PORT);
+console.log(`RECRAC server running on :${process.env.PORT}`);
+
+module.exports = app;

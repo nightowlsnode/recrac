@@ -1,0 +1,64 @@
+<md-dialog style="z-index: 400;" aria-label="Join (Form)">
+  <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--4dp">
+    <div class="mdl-card mdl-cell mdl-cell--12-col" style=" margin: 0 0 25px;">
+      <div style="padding: 0 20px">
+        <h2 style="font-size: 2em"><b>take a seat...</b></h2>
+        <p style="margin-top: -37px;font-style: italic;font-size: 0.9em;">only {{event.desiredParticipants-event.potentialParticipants.length | number:0}} remaining!</p>
+        <!-- PINK BID TOGGLE -->
+        <div class="topBidder">
+          <div ng-show="topBidder">
+            <h4 style="margin: 5px 0 1px 0;">you hold a top bid!</h4>
+            <span>your current max is: ${{maxBid}}</span>
+          </div>
+          <!-- not topBidder && not the host -->
+          <div style="padding: 10px 0;" ng-show="!topBidder && event.host.user !== user.data.user.user">
+            <span>enter a bid below to join the event</span>
+          </div>
+        </div>
+        <form ng-show="event.host.user !== user.data.user.user" name="bidAmount" ng-submit="makeBid()">
+          <div layout-gt-lg="row">
+            $<md-input-container class="md-inline" style="margin: 0;">
+               <input ng-model="bid.text" rows="1" md-select-on-focus style="width:4em"> </input>
+            </md-input-container>
+            <a ng-click="makeBid()" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">Make Bid</a>
+          </div>
+        </form>
+        <div style="margin: 5px 0 10px 0;">
+          <span>minimum bid: ${{event.price}}</span>
+        </div>
+        <div ng-show="event.host.user === user.data.user.user">
+          <span>Confirmed Participants</span>
+          <p style="margin: 5px 0 0;">
+            <img ng-repeat="participant in event.confirmedParticipants" ng-src="{{participant.photo || 'http://donatered-asset.s3.amazonaws.com/assets/default/default_user-884fcb1a70325256218e78500533affb.jpg'}}" style="width: 50px"/>
+          </p>
+        </div>
+        <div> <!-- ng-show="event.host.user === user.data.user.user" -->
+          <!-- VIEW FOR HOST CONTROL -->
+          <div ng-show="event.host.user === user.data.user.user">
+            <span>Potential Participants</span>
+            <p style="margin: 5px 0 0;">
+              <div class="potential-part-div" ng-repeat="participant in event.potentialParticipants" >
+                <img ng-src="{{participant.photo}}"/><br/>
+                <md-button class="md-icon-button md-accent potential-icons potential-icons-check" ng-click="showData(event._id, participant.user)">
+                  <i class="material-icons">&#xE876;</i>
+                </md-button>
+                <md-button class="md-icon-button md-accent potential-icons potential-icons-delete">
+                  <i class="material-icons">&#xE92B;</i>
+                </md-button>
+              </div>
+            </p>
+          </div>
+          <!-- View for Bidders -->
+          <div ng-show="event.host.user !== user.data.user.user">
+            <span>top bidders</span>
+            <p style="margin: 5px 0 0;">
+              <div class="potential-part-div" ng-repeat="participant in event.potentialParticipants" >
+                <img ng-src="{{participant.photo}}"/><br/>
+              </div>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</md-dialog>

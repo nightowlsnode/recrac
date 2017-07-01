@@ -1,6 +1,15 @@
 angular.module('App')
   .controller('dashController', function ($scope, $http, userService, mappingTools) {
     $scope.events = [];
+    $scope.joinedEvents = () => {
+      return $scope.events.reduce((joined, event) => {
+        let found = false;
+        event.potentialParticipants.forEach((seat) => {
+          found = seat.user === user.data.user.user;
+        });
+        return found ? (joined.push(event) && joined) : joined;
+      }, []);
+    };
     mappingTools.getEvents().then(function(data) {
       $scope.events = data;
     });

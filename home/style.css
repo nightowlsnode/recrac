@@ -1,5 +1,8 @@
+ body {
+  z-index: -5;
+ }
  .angular-leaflet-map {
-    z-index:60;
+    z-index: 0;
   }
   
 h1, h2 {
@@ -12,7 +15,10 @@ h1, h2 {
 h2 {
   font-size: 2em;
 }
-
+.mdl-layout__drawer-button{
+  position: fixed;
+  z-index: 5;
+}
 .custom-nav{
   background-color: rgb(63,81,181);
   color: rgb(255,255,255);
@@ -20,9 +26,19 @@ h2 {
   transition-duration: .2s;
   transition-timing-function: cubic-bezier(.4,0,.2,1);
   transition-property: max-height,box-shadow;
+  background: rgb(63,81,181);
+  position: fixed;
+  z-index: 2;
+  width: 100%;
 }
-
+.topBidder {
+  background: rgba(255, 97, 151, 0.72);
+  margin: -16px 0px 16px;
+  border-radius: 10px;
+  text-align: center;
+}
 .search-box {
+  margin-top: 56px;
   width: 100%;
   padding: 40px 70px;
 }
@@ -55,6 +71,9 @@ h2 {
   color: #fff;
   background:
     url('./pic/game.jpg') bottom right 15% no-repeat #46B6AC;
+}
+.mdl-layout__obfuscator {
+  position: fixed;
 }
 
 /*.snippet-demo-container.mdl-card__title.mdl-card--expand {
@@ -201,7 +220,8 @@ h2 {
 }
 
 .mdl-layout__drawer.is-visible {
-    z-index: 1001;
+    z-index: 10;
+    position: fixed;
 }
 
 md-input-container.md-input-focused label {
