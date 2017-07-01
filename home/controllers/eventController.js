@@ -56,11 +56,14 @@ angular.module('App')
       $http.put('/events/' + $scope.id, {event: $scope.id, user: '', rating: $scope.rating}, {contentType: 'application/json'})
         .then(function (response) {
           console.log('Rating Successful: ', response);
-          event.rating = response.data.rating;
+          $scope.event = response.data;
           if (response.status === 200) {
             alert('Thanks for rating this event!');
           } else if (response.status === 400) {
             alert('You already rated this event');
+          }
+          else if (response.status === 401) {
+            alert('Only confirmed users can rate this !');
           }
         })
         .catch(function(err) {
