@@ -105,9 +105,9 @@ angular.module('App')
         });
     };
 
-    $scope.showData = function(eventId, participantName ) {
-      console.log('dnwbuiy');
-      $http.put('/confirmParticipant', {eventId: eventId, participantName: participantName}, {contentType: 'application/json'})
+    $scope.showData = function(eventId, participantEmail ) {
+      console.log(participantEmail);
+      $http.put('/confirmParticipant', {eventId: eventId, participantEmail: participantEmail}, {contentType: 'application/json'})
         .then(function (response) {
           console.log('Put Successful: ', response);
         })

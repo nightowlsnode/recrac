@@ -13,14 +13,12 @@ const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
 const bodyParser = require('body-parser');
-const biddingController = require('./server/biddingController.js');
 const FacebookStrategy = require('passport-facebook').Strategy;
-const httpServer = require('http').Server;
-const socket = require('socket.io');
 const push = require('./push.js');
 const app = express();
-const server = httpServer(app);
-const ws = socket(server);
+module.exports = app;
+const {socketUsers, socket, ws, server} = require('./server/socket.js');
+const biddingController = require('./server/biddingController.js');
 
 
 // UNDER(middle)WEAR
@@ -195,7 +193,7 @@ app.post('/events', function(req, res) {
 
 
 app.put('/confirmParticipant', function(req, res) {
-  User.findOne({user: req.body.participantName}, function(err, joiner) {
+  User.findOne({'facebook.email': req.body.participantEmail}, function(err, joiner) {
     if (err) {
       res.status(500).send(err);
     } else {
@@ -363,16 +361,15 @@ app.post('/subs', (req, res) => {
       res.status(500).send(err);
     });
 });
-var users = [];
 ws.on('connection', function(socket) {
   socket.on('getUserInfo', (info) => {
     info.data.user.socketId = socket.id;
-    users.push(info.data.user);
+    socketUsers.push(info.data.user);
   });
 
   socket.on('postComment', (comment) => {
     const {id } = comment;
-    users.forEach((user) => {
+    socketUsers.forEach((user) => {
       if (user.hostedEvents.includes (id)) {
         ws.to(user.socketId).emit('addAlert', {user: comment.user.user, eventName: comment.eventName, comment });
       }  
@@ -383,5 +380,3 @@ ws.on('connection', function(socket) {
 //Server init to listen on port 3000 -> Needs to be altered for deployment
 server.listen(process.env.PORT);
 console.log(`RECRAC server running on :${process.env.PORT}`);
-
-module.exports = app;
